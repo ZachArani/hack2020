@@ -4,6 +4,9 @@ from time import *
 from SacaeMap import *
 from Player import *
 
+def RescaleImage(image):
+	return pygame.transform.scale(image, (TILESIZE,TILESIZE))
+
 # Turn Debug mode on and off
 DEBUG = True
 
@@ -25,9 +28,9 @@ walk_delay = 1
 walk_cd = 0
 
 HOTKEYS = {
-		1 : Lord, 
-		2 : Mage, 
-		3 : Archer, 
+		1 : Lord,
+		2 : Mage,
+		3 : Archer,
 		4 : Bard
 	  }
 
@@ -48,13 +51,15 @@ pygame.init()
 if DEBUG:
 	const = 200
 	INVFONT = pygame.font.SysFont('FreeSans.tff',18)
-	
+
 else:
 	const = 0
-
-DISPLAYSURF = pygame.display.set_mode((MAPWIDTH*TILESIZE, MAPHEIGHT*TILESIZE+const))
+#Create display surface
+DISPLAYSURF = pygame.display.set_mode((MAPWIDTH*TILESIZE, MAPHEIGHT*TILESIZE+const),RESIZABLE)
 
 while True:
+	curWidth, curHeight = pygame.display.get_surface().get_size()
+	TILESIZE=int(curWidth/MAPWIDTH)
 
 	mouse_coord = [pygame.mouse.get_pos()[0]/TILESIZE, pygame.mouse.get_pos()[1]/TILESIZE]
 	cursorPos = PLAYER.position
@@ -76,7 +81,7 @@ while True:
 				if player.position == mouse_coord:
 					PLAYER = player
 
-		elif pygame.mouse.get_pressed()[2]: 
+		elif pygame.mouse.get_pressed()[2]:
 			new_coord = [pygame.mouse.get_pos()[0]/TILESIZE, pygame.mouse.get_pos()[1]/TILESIZE]
 			case = 0
 			for player in listPLAYERS:
@@ -202,12 +207,12 @@ while True:
 	# Display map sprites
 	for row in range(MAPHEIGHT):
 		for column in range(MAPWIDTH):
-			DISPLAYSURF.blit(textures[tilemap[row][column]], (column*TILESIZE, row*TILESIZE))
+			DISPLAYSURF.blit(RescaleImage(textures[tilemap[row][column]]), (column*TILESIZE, row*TILESIZE))
 
 	# Display players and cursor
-	DISPLAYSURF.blit(Cursor,(cursorPos[0]*TILESIZE,cursorPos[1]*TILESIZE))
+	DISPLAYSURF.blit(RescaleImage(Cursor),(cursorPos[0]*TILESIZE,cursorPos[1]*TILESIZE))
 	for player in listPLAYERS:
-		DISPLAYSURF.blit(player.sprite,(player.position[0]*TILESIZE,player.position[1]*TILESIZE))
+		DISPLAYSURF.blit(RescaleImage(player.sprite),(player.position[0]*TILESIZE,player.position[1]*TILESIZE))
 
 	# Display DEBUG Information
 	if DEBUG:
@@ -235,7 +240,7 @@ while True:
 		if case != 0:
 			Text_Valid = INVFONT.render('INVALID COMMAND: {}'.format(error_cases[case]) + 10*'   ', True, RED, BLACK)
 		DISPLAYSURF.blit(Text_Valid,(placePosition, MAPHEIGHT*TILESIZE+60))
-			
+
 		Text_Char_Selected = INVFONT.render('Currently Selected: ' + PLAYER.name + '        ', True, WHITE, BLACK)
 		DISPLAYSURF.blit(Text_Char_Selected,(placePosition, MAPHEIGHT*TILESIZE+75))
 
