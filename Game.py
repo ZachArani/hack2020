@@ -14,7 +14,7 @@ from random import shuffle
 current_path = os.path.dirname(__file__)
 
 def RescaleImage(image):
-    return pygame.transform.scale(image, (TILESIZE, TILESIZE))
+    return pygame.transform.scale(image, (TILESIZE-1, TILESIZE-1))
 
 def gridDistance(pos1, pos2):
     return abs(pos1[0]-pos2[0])+abs(pos1[1]-pos2[1])
@@ -29,13 +29,14 @@ def attack(fromCharacter,toCharacter):
                 listPLAYERS.remove(toCharacter)
     else:
         print("This character can't attack twice!")
-def incrementAdjacent(dist,row,column,parent,toCharacter):
+
+def incrementAdjacent(dist,row,column,parent,toCharacter,fromCharacter):
     for xinc,yinc in [[1,0],[0,1],[-1,0],[0,-1]]:
         #print(str(xinc)+" "+str(row)+" "+str(xinc+row))
         newPos=[column+yinc,row+xinc]
         good=True
         for character in listPLAYERS+listENEMIES:
-            if newPos == character.position and not character.position==toCharacter.position:
+            if newPos == character.position and not character.position==toCharacter.position and not character.position==fromCharacter.position:
                 good=False
                 break
         if good and row+xinc<len(tilemap) and column+yinc<len(tilemap[0]) and row+xinc>-1 and column+yinc>-1:
@@ -43,7 +44,9 @@ def incrementAdjacent(dist,row,column,parent,toCharacter):
                 dist[row+xinc][column+yinc]=dist[row][column]+1
                 parent[(row+xinc,column+yinc)]=(row,column)
 
+
 def scuffedDijkstra(fromCharacter, toCharacter):
+
     parent={}
     startPos = toCharacter.position
     print(startPos)
@@ -52,9 +55,9 @@ def scuffedDijkstra(fromCharacter, toCharacter):
     #set all to infinity
     dist = [[30 for x in range(len(tilemap[0]))] for x in range(len(tilemap))]
     explored=[startPos]
+
     dist[startPos[1]][startPos[0]]=0
-
-
+    incrementAdjacent(dist,startPos[1],startPos[0],parent,toCharacter,fromCharacter)
     while len(explored)<len(tilemap)*len(tilemap[0])-len(NOT_PASSABLE):
         minVal=29
         minRow=-1
@@ -69,7 +72,7 @@ def scuffedDijkstra(fromCharacter, toCharacter):
                         minRow=row_index
                         minTile=tile_index
         explored.append([minRow,minTile])
-        incrementAdjacent(dist,minRow,minTile,parent,fromCharacter)
+        incrementAdjacent(dist,minRow,minTile,parent,toCharacter,fromCharacter)
         if [minTile,minRow]==endPos:
             for d in dist:
                 print(d)
@@ -91,8 +94,8 @@ phase='Move'
 
 # Initialize Players and Positions
 Asparagus = Player('Asparagus', os.path.join(current_path,'CharacterSprites/asparagus.png'), [10, 9], 'Green')
-Kohlrabi = Player('Broccoli', os.path.join(current_path,'CharacterSprites/kohlrabi.png'), [9, 9], 'Green')
-Sugarcane = Player('Archer', os.path.join(current_path,'CharacterSprites/sugarcane.png'), [8, 9], 'Green')
+Kohlrabi = Player('Kohlrabi', os.path.join(current_path,'CharacterSprites/kohlrabi.png'), [9, 9], 'Green')
+Sugarcane = Player('Sugarcane', os.path.join(current_path,'CharacterSprites/sugarcane.png'), [8, 9], 'Green')
 listPLAYERS = [Asparagus, Kohlrabi, Sugarcane]
 
 
@@ -156,13 +159,14 @@ def redTurn():
         #numparentmoves=closest_dist-
         print(closest_dist)
         if closest_dist>1:
-            n=min(enemy.max_moves,closest_dist-1)
+            n=min(enemy.max_moves,(closest_dist-1-(closest.max_moves+closest.range))%40)
             for x in range(n):
                 nextPos=parent[(enemy.position[1],enemy.position[0])]
                 enemy.position=[nextPos[1],nextPos[0]]
                 drawCharacters()
                 pygame.display.update()
                 time.sleep(0.4)
+    for enemy in listENEMIES:
         for player in listPLAYERS:
             if gridDistance(player.position,enemy.position)==1:
                 attack(enemy,player)
