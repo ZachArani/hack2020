@@ -1,0 +1,28 @@
+﻿I'm sorry, but an uncaught exception occurred.
+
+While running game code:
+  File "game/script.rpy", line 145, in script
+    $ renpy.music.register_channel("lecture", tight=False)
+  File "game/script.rpy", line 145, in <module>
+    $ renpy.music.register_channel("lecture", tight=False)
+Exception: Can't register channel outside of init phase.
+
+-- Full Traceback ------------------------------------------------------------
+
+Full traceback:
+  File "game/script.rpy", line 145, in script
+    $ renpy.music.register_channel("lecture", tight=False)
+  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/ast.py", line 914, in execute
+    renpy.python.py_exec_bytecode(self.code.bytecode, self.hide, store=self.store)
+  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/python.py", line 2028, in py_exec_bytecode
+    exec bytecode in globals, locals
+  File "game/script.rpy", line 145, in <module>
+    $ renpy.music.register_channel("lecture", tight=False)
+  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/audio/audio.py", line 757, in register_channel
+    raise Exception("Can't register channel outside of init phase.")
+Exception: Can't register channel outside of init phase.
+
+Darwin-18.0.0-x86_64-i386-64bit
+Ren'Py 7.3.5.606
+STEM Tactics 1.0
+Sun Feb  9 00:06:30 2020
