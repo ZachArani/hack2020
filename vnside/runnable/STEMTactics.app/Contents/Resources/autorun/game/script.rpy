@@ -272,4 +272,6 @@ label start:
 
     # This ends the game.
 
+    $ renpy.quit()
+
     return
