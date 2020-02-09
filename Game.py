@@ -6,11 +6,18 @@ from Player import *
 
 
 def RescaleImage(image):
-    return pygame.transform.scale(image, (TILESIZE-2, TILESIZE-2))
+    return pygame.transform.scale(image, (TILESIZE, TILESIZE))
 
 def gridDistance(pos1, pos2):
     return abs(pos1[0]-pos2[0])+abs(pos1[1]-pos2[1])
 
+def attack(fromCharacter,toCharacter):
+    if not fromCharacter.has_attacked:
+        toCharacter.takeHit(fromCharacter.giveHit())
+        if not toCharacter.isAlive:
+            listENEMIES.remove(toCharacter)
+    else:
+        print("This character can't attack twice!")
 
 # Turn Debug mode on and off
 DEBUG = True
@@ -78,12 +85,17 @@ while True:
     mouse_coord = [pygame.mouse.get_pos()[0] / TILESIZE, pygame.mouse.get_pos()[1] / TILESIZE]
     cursorPos = PLAYER.position
 
+
     # Movement Cooldown Clock
     turn_clock = clock.tick() / 1000.0
     walk_cd -= turn_clock
 
     # Get all user events
-    for event in pygame.event.get():
+    events = []
+    for e in pygame.event.get():
+        events.append(e)
+
+    for event in events:
         # If user wants to
         if (event.type == VIDEORESIZE):
             nextWidth=event.w
@@ -97,32 +109,35 @@ while True:
             sys.exit()
 
         # Mouse inputs
-        elif pygame.mouse.get_pressed()[0]:
-            new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
-            for player in listPLAYERS:
-                if player.position == new_coord:
-                    PLAYER = player
 
-        elif (event.type == KEYDOWN):
-            if (event.key == K_1):
-                PLAYER = HOTKEYS[1]
-                cursorPos = PLAYER.position
-                new_coord = cursorPos
-            if (event.key == K_2):
-                PLAYER = HOTKEYS[2]
-                cursorPos = PLAYER.position
-                new_coord = cursorPos
-            if (event.key == K_3):
-                PLAYER = HOTKEYS[3]
-                cursorPos = PLAYER.position
-                new_coord = cursorPos
-            if (event.key == K_4):
-                PLAYER = HOTKEYS[4]
-                cursorPos = PLAYER.position
-                new_coord = cursorPos
+
+    for event in events:
+
+        if phase == 'Move':
+            if pygame.mouse.get_pressed()[0]:
+                new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
+                for player in listPLAYERS:
+                    if player.position == new_coord:
+                        PLAYER = player
+
+            if (event.type == KEYDOWN):
+            # if (event.key == K_1):
+            #     PLAYER = HOTKEYS[1]
+            #     cursorPos = PLAYER.position
+            #     new_coord = cursorPos
+            # if (event.key == K_2):
+            #     PLAYER = HOTKEYS[2]
+            #     cursorPos = PLAYER.position
+            #     new_coord = cursorPos
+            # if (event.key == K_3):
+            #     PLAYER = HOTKEYS[3]
+            #     cursorPos = PLAYER.position
+            #     new_coord = cursorPos
+            # if (event.key == K_4):
+            #     PLAYER = HOTKEYS[4]
+            #     cursorPos = PLAYER.position
+            #     new_coord = cursorPos
             # Keyboard Inputs
-
-            if phase=='Move':
                 if (event.key == K_d and PLAYER.moves_left>0):
                     PLAYER.facing = 'RIGHT'
                     increment = 1
@@ -211,11 +226,36 @@ while True:
                 if allDone:
                     phase = 'Attack'
                     for player in listPLAYERS:
-                        player.restoreSprite()
-            else:
-                if pygame.mouse.get_pressed()[2]:
-                    new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
+                        player.start_turn()
 
+        else: # Attack phase
+            if pygame.mouse.get_pressed()[0]:
+                new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
+                for player in listPLAYERS:
+                    if player.position == new_coord:
+                        PLAYER = player
+                for enemy in listENEMIES:
+                    if enemy.position == new_coord and gridDistance(new_coord, PLAYER.position)<=PLAYER.range:
+                        attack(PLAYER, enemy)
+            elif (event.type == KEYDOWN):
+                if (event.key == K_RETURN):
+                    for player in listPLAYERS:
+                        player.giveHit()
+            allDone = True
+            canAttack = False
+            for player in listPLAYERS:
+                if (not player.has_attacked):
+                    allDone = False
+                    for enemy in listENEMIES:
+                        if gridDistance(player.position, enemy.position) <= player.range:
+                            canAttack = True
+                            break
+
+            if allDone or not canAttack:
+                phase = 'Move'
+                turn= 'Red'
+                for player in listPLAYERS:
+                    player.start_turn()
 
     # Display map sprites
     for row in range(MAPHEIGHT):
@@ -244,6 +284,15 @@ while True:
 
         Text_New_Coords = INVFONT.render('Desired Coordinates: ' + str(new_coord) + '  ', True, WHITE, BLACK)
         DISPLAYSURF.blit(Text_New_Coords, (placePosition, MAPHEIGHT * TILESIZE + 45))
+
+        new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
+        health='N/A'
+        for character in listENEMIES+listPLAYERS:
+            if new_coord == character.position:
+                health=str(character.health)+'/'+str(character.max_health)
+        #print(health)
+        Health_Coords = INVFONT.render('Highlighted Character\'s Health: ' + health+ '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Health_Coords, (placePosition, MAPHEIGHT * TILESIZE + 60))
 
         error_cases = {
             1: 'OUT OF BOUNDS',

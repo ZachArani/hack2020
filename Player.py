@@ -13,6 +13,7 @@ class Player:
 		self.team=team
 		self.range=range
 
+		self.isAlive=True
 
 		self.has_attacked=False
 		self.moves_left=3
@@ -34,3 +35,11 @@ class Player:
 		return self
 	def restoreSprite(self):
 		self.sprite = pygame.image.load(self.original_sprite)
+	def giveHit(self):
+		self.has_attacked=True
+		self.sprite = pygame.image.load('CharacterSprites/gray_mage.png')
+		return self
+	def takeHit(self,attacker):
+		self.health -= attacker.damage
+		if self.health <= 0:
+			self.isAlive = False
