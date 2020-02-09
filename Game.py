@@ -274,39 +274,41 @@ while True:
         placePosition = 5
 
         # Selected Character
+        DISPLAYSURF.blit(RescaleImage(PLAYER.sprite), (placePosition, MAPHEIGHT * TILESIZE))
         Text_Name_Coords = INVFONT.render(
             'Name: ' + str(PLAYER.name) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Name_Coords, (placePosition, MAPHEIGHT * TILESIZE))
+        DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE))
         Text_Health_Coords = INVFONT.render(
             'Health: ' + str(PLAYER.health) + '/' + str(PLAYER.max_health) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Health_Coords, (placePosition, MAPHEIGHT * TILESIZE + 15))
+        DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 15))
         Text_Move_Coords = INVFONT.render(
             'Moves: ' + str(PLAYER.moves_left) + '/' + str(PLAYER.max_moves) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Move_Coords, (placePosition, MAPHEIGHT * TILESIZE + 30))
+        DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 30))
         Text_Range_Coords = INVFONT.render(
             'Range: ' + str(PLAYER.range) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Range_Coords, (placePosition, MAPHEIGHT * TILESIZE + 45))
+        DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 45))
         Text_Damage_Coords = INVFONT.render(
             'Damage: ' + str(PLAYER.damage) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Damage_Coords, (placePosition, MAPHEIGHT * TILESIZE + 60))
+        DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 60))
 
         # Moused over character
         new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
         for player in listPLAYERS + listENEMIES:
             if new_coord == player.position:
+                DISPLAYSURF.blit(RescaleImage(player.sprite), (placePosition + 275, MAPHEIGHT * TILESIZE))
                 Text_Name_Coords = INVFONT.render(
                     'Name: ' + str(player.name) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 200, MAPHEIGHT * TILESIZE))
+                DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE))
                 Text_Health_Coords = INVFONT.render('Health: ' + str(player.health) + '/' + str(player.max_health) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 200, MAPHEIGHT * TILESIZE + 15))
+                DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 15))
                 Text_Move_Coords = INVFONT.render('Moves: ' + str(player.moves_left) + '/' + str(player.max_moves) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 200, MAPHEIGHT * TILESIZE + 30))
+                DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 30))
                 Text_Range_Coords = INVFONT.render(
                     'Range: ' + str(player.range) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 200, MAPHEIGHT * TILESIZE + 45))
+                DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 45))
                 Text_Damage_Coords = INVFONT.render(
                     'Damage: ' + str(player.damage) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 200, MAPHEIGHT * TILESIZE + 60))
+                DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 60))
 
 
 

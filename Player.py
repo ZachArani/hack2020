@@ -13,6 +13,7 @@ class Player:
 		self.team=team
 		self.range=range
 
+		self.portrait = self.sprite
 		self.isAlive=True
 
 		self.has_attacked=False
