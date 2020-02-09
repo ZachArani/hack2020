@@ -25,8 +25,6 @@ def RescaleImage(image):
 def gridDistance(pos1, pos2):
     return abs(pos1[0]-pos2[0])+abs(pos1[1]-pos2[1])
 
-def donothing():
-    x=2
 def attack(fromCharacter,toCharacter):
     #menu.main()
     if not fromCharacter.has_attacked:
@@ -195,9 +193,10 @@ def redTurn():
                 pygame.display.update()
                 time.sleep(0.4)
     if len(listPLAYERS) != 0:
+        drawCharacters()
         DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
         pygame.display.update()
-        time.sleep(.5)
+        time.sleep(.4)
 
         #if can_hit go to it
     #Attacks
@@ -277,23 +276,6 @@ while True:
                         PLAYER = player
 
             if (event.type == KEYDOWN):
-            # if (event.key == K_1):
-            #     PLAYER = HOTKEYS[1]
-            #     cursorPos = PLAYER.position
-            #     new_coord = cursorPos
-            # if (event.key == K_2):
-            #     PLAYER = HOTKEYS[2]
-            #     cursorPos = PLAYER.position
-            #     new_coord = cursorPos
-            # if (event.key == K_3):
-            #     PLAYER = HOTKEYS[3]
-            #     cursorPos = PLAYER.position
-            #     new_coord = cursorPos
-            # if (event.key == K_4):
-            #     PLAYER = HOTKEYS[4]
-            #     cursorPos = PLAYER.position
-            #     new_coord = cursorPos
-            # Keyboard Inputs
                 if (event.key == K_d and PLAYER.moves_left>0):
                     PLAYER.facing = 'RIGHT'
                     increment = 1
@@ -380,6 +362,8 @@ while True:
                         allDone=False
                         break
                 if allDone:
+                    drawCharacters()
+                    pygame.display.update()
                     phase = 'Attack'
                     DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
                     pygame.display.update()
