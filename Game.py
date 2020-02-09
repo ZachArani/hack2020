@@ -15,6 +15,10 @@ from random import shuffle
 
 current_path = os.path.dirname(__file__)
 
+pygame.mixer.init()
+pygame.mixer.music.load(os.path.join(current_path, "Music/battletimeintro.ogg"))
+pygame.mixer.music.queue(os.path.join(current_path, "Music/battletimeloop.ogg"))
+
 def RescaleImage(image):
     return pygame.transform.scale(image, (TILESIZE, TILESIZE))
 
