@@ -4,32 +4,53 @@ from time import *
 from SacaeMap import *
 from Player import *
 
+
+def RescaleImage(image):
+    return pygame.transform.scale(image, (TILESIZE, TILESIZE))
+
+def gridDistance(pos1, pos2):
+    return abs(pos1[0]-pos2[0])+abs(pos1[1]-pos2[1])
+
+def attack(fromCharacter,toCharacter):
+    if not fromCharacter.has_attacked:
+        toCharacter.takeHit(fromCharacter.giveHit())
+        if not toCharacter.isAlive:
+            listENEMIES.remove(toCharacter)
+    else:
+        print("This character can't attack twice!")
+
 # Turn Debug mode on and off
 DEBUG = True
 
 # Information for Error Handling
 WHITE = [255, 255, 255]
-BLACK = [0  , 0  , 0  ]
-RED   = [255, 0, 0]
-case  = 0
+BLACK = [0, 0, 0]
+RED = [255, 0, 0]
+case = 0
+turn='Green'
+phase='Move'
 
 # Initialize Players and Positions
-Lord   = Player('Lord',   'CharacterSprites/lyn.png',    [10,9])
-Mage   = Player('Mage',   'CharacterSprites/mage.png',   [9,9])
-Archer = Player('Archer', 'CharacterSprites/archer.png', [8,9])
-Bard   = Player('Bard',   'CharacterSprites/bard.png',   [7,9])
-
+Lord = Player('Lord', 'CharacterSprites/lyn.png', [10, 9], 'Green')
+Mage = Player('Mage', 'CharacterSprites/mage.png', [9, 9], 'Green')
+Archer = Player('Archer', 'CharacterSprites/archer.png', [8, 9], 'Green')
+Bard = Player('Bard', 'CharacterSprites/bard.png', [7, 9], 'Green')
 listPLAYERS = [Lord, Mage, Archer, Bard]
+
+Red1 = Player('Mage1', 'CharacterSprites/red_mage.png', [0, 1], 'Red')
+Red2 = Player('Mage2', 'CharacterSprites/red_mage.png', [5, 3], 'Red')
+Red3 = Player('Mage3', 'CharacterSprites/red_mage.png', [9, 8], 'Red')
+listENEMIES = [Red1, Red2, Red3]
 
 walk_delay = 1
 walk_cd = 0
 
 HOTKEYS = {
-		1 : Lord, 
-		2 : Mage, 
-		3 : Archer, 
-		4 : Bard
-	  }
+    1: Lord,
+    2: Mage,
+    3: Archer,
+    4: Bard
+}
 
 # First player is default
 PLAYER = listPLAYERS[0]
@@ -46,213 +67,275 @@ cursorPos = PLAYER.position
 # Set up the Display
 pygame.init()
 if DEBUG:
-	const = 200
-	INVFONT = pygame.font.SysFont('FreeSans.tff',18)
-	
+    const = 200
+    INVFONT = pygame.font.SysFont('FreeSans.tff', 18)
+
 else:
-	const = 0
-
-DISPLAYSURF = pygame.display.set_mode((MAPWIDTH*TILESIZE, MAPHEIGHT*TILESIZE+const))
-
+    const = 0
+# Create display surface
+DISPLAYSURF = pygame.display.set_mode((MAPWIDTH * TILESIZE, MAPHEIGHT * TILESIZE + const), RESIZABLE)
+nextWidth=MAPWIDTH * TILESIZE
+nextHeight= MAPHEIGHT * TILESIZE + const
 while True:
 
-	mouse_coord = [pygame.mouse.get_pos()[0]/TILESIZE, pygame.mouse.get_pos()[1]/TILESIZE]
-	cursorPos = PLAYER.position
+    TILESIZE = int(nextWidth / MAPWIDTH)
+    #DISPLAYSURF = pygame.display.set_mode((MAPWIDTH * TILESIZE, MAPHEIGHT * TILESIZE + const), RESIZABLE)
+    #DISPLAYSURF.update()
 
-	# Movement Cooldown Clock
-	turn_clock = clock.tick() / 1000.0
-	walk_cd -= turn_clock
+    mouse_coord = [pygame.mouse.get_pos()[0] / TILESIZE, pygame.mouse.get_pos()[1] / TILESIZE]
+    cursorPos = PLAYER.position
 
-	# Get all user events
-	for event in pygame.event.get():
-		# If user wants to quit, end game and and close window
-		if (event.type == QUIT):
-			pygame.quit()
-			sys.exit()
 
-		# Mouse inputs
-		elif pygame.mouse.get_pressed()[0]:
-			for player in listPLAYERS:
-				if player.position == mouse_coord:
-					PLAYER = player
+    # Movement Cooldown Clock
+    turn_clock = clock.tick() / 1000.0
+    walk_cd -= turn_clock
 
-		elif pygame.mouse.get_pressed()[2]: 
-			new_coord = [pygame.mouse.get_pos()[0]/TILESIZE, pygame.mouse.get_pos()[1]/TILESIZE]
-			case = 0
-			for player in listPLAYERS:
-				if player != PLAYER:
-					if new_coord == player.position:
-						case = 3
-			if tilemap[new_coord[1]][new_coord[0]] not in PASSABLE:
-				case = 2
-			elif PLAYER.move_current_cd > 0:
-				case = 4
-			elif (PLAYER.move_current_cd <= 0) and (case == 0):
-				for i in range(len(new_coord)):
-					while PLAYER.position[i] != new_coord[i]:
-						if new_coord[i] > PLAYER.position[i]:
-							PLAYER.position[i] += 1
-						if new_coord[i] < PLAYER.position[i]:
-							PLAYER.position[i] -= 1
+    # Get all user events
+    events = []
+    for e in pygame.event.get():
+        events.append(e)
 
-		elif (event.type == KEYDOWN):
-			# Keyboard Inputs
-			if (event.key == K_RIGHT):
-				PLAYER.facing = 'RIGHT'
-				increment = 1
-				case = 0
-				new_coord = [PLAYER.position[0]+1, PLAYER.position[1]]
-				if new_coord[0] not in range(MAPWIDTH):
-					increment = 0
-					case = 1
-				elif tilemap[new_coord[1]][new_coord[0]] not in PASSABLE:
-					increment = 0
-					case = 2
-				else:
-					for player in listPLAYERS:
-						if new_coord == player.position:
-							increment = 0
-							case = 3
-				PLAYER.position[0] += increment
+    for event in events:
+        # If user wants to
+        if (event.type == VIDEORESIZE):
+            nextWidth=event.w
+            nextHeight=event.h
+            DISPLAYSURF = pygame.display.set_mode((event.w, event.h),
+                                              pygame.RESIZABLE)
 
-			if (event.key == K_LEFT):
-				PLAYER.facing = 'LEFT'
-				increment = 1
-				case = 0
-				new_coord = [PLAYER.position[0]-1, PLAYER.position[1]]
-				if new_coord[0] not in range(MAPWIDTH):
-					increment = 0
-					case = 1
-				elif tilemap[new_coord[1]][new_coord[0]] not in PASSABLE:
-					increment = 0
-					case = 2
-				else:
-					for player in listPLAYERS:
-						if new_coord == player.position:
-							increment = 0
-							case = 3
-				PLAYER.position[0] -= increment
+        # If user wants to quit, end game and and close window
+        elif (event.type == QUIT):
+            pygame.quit()
+            sys.exit()
 
-			if (event.key == K_UP):
-				PLAYER.facing = 'UP'
-				increment = 1
-				case = 0
-				new_coord = [PLAYER.position[0], PLAYER.position[1]-1]
-				if new_coord[1] not in range(MAPHEIGHT):
-					increment = 0
-					case = 1
-				elif tilemap[new_coord[1]][new_coord[0]] not in PASSABLE:
-					increment = 0
-					case = 2
-				else:
-					for player in listPLAYERS:
-						if new_coord == player.position:
-							increment = 0
-							case = 3
-				PLAYER.position[1] -= increment
+        # Mouse inputs
 
-			if (event.key == K_DOWN):
-				PLAYER.facing = 'DOWN'
-				increment = 1
-				case = 0
-				new_coord = [PLAYER.position[0], PLAYER.position[1]+1]
-				if new_coord[1] not in range(MAPHEIGHT):
-					increment = 0
-					case = 1
-				elif tilemap[new_coord[1]][new_coord[0]] not in PASSABLE:
-					increment = 0
-					case = 2
-				else:
-					for player in listPLAYERS:
-						if new_coord == player.position:
-							increment = 0
-							case = 3
-				PLAYER.position[1] += increment
 
-			# Mapping Hotkeys
-			if pygame.key.get_pressed()[pygame.K_LCTRL] or pygame.key.get_pressed()[pygame.K_RCTRL]:
-				if (event.key == K_1):
-					HOTKEYS[1] = PLAYER
-				if (event.key == K_2):
-					HOTKEYS[2] = PLAYER
-				if (event.key == K_3):
-					HOTKEYS[3] = PLAYER
-				if (event.key == K_4):
-					HOTKEYS[4] = PLAYER
+    for event in events:
 
-			# Hotkeys to switch between units
-			else:
-				if (event.key == K_1):
-					PLAYER = HOTKEYS[1]
-					cursorPos = PLAYER.position
-					new_coord = cursorPos
-				if (event.key == K_2):
-					PLAYER = HOTKEYS[2]
-					cursorPos = PLAYER.position
-					new_coord = cursorPos
-				if (event.key == K_3):
-					PLAYER = HOTKEYS[3]
-					cursorPos = PLAYER.position
-					new_coord = cursorPos
-				if (event.key == K_4):
-					PLAYER = HOTKEYS[4]
-					cursorPos = PLAYER.position
-					new_coord = cursorPos
+        if phase == 'Move':
+            if pygame.mouse.get_pressed()[0]:
+                new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
+                for player in listPLAYERS:
+                    if player.position == new_coord:
+                        PLAYER = player
 
-	# Display map sprites
-	for row in range(MAPHEIGHT):
-		for column in range(MAPWIDTH):
-			DISPLAYSURF.blit(textures[tilemap[row][column]], (column*TILESIZE, row*TILESIZE))
+            if (event.type == KEYDOWN):
+            # if (event.key == K_1):
+            #     PLAYER = HOTKEYS[1]
+            #     cursorPos = PLAYER.position
+            #     new_coord = cursorPos
+            # if (event.key == K_2):
+            #     PLAYER = HOTKEYS[2]
+            #     cursorPos = PLAYER.position
+            #     new_coord = cursorPos
+            # if (event.key == K_3):
+            #     PLAYER = HOTKEYS[3]
+            #     cursorPos = PLAYER.position
+            #     new_coord = cursorPos
+            # if (event.key == K_4):
+            #     PLAYER = HOTKEYS[4]
+            #     cursorPos = PLAYER.position
+            #     new_coord = cursorPos
+            # Keyboard Inputs
+                if (event.key == K_d and PLAYER.moves_left>0):
+                    PLAYER.facing = 'RIGHT'
+                    increment = 1
+                    case = 0
+                    new_coord = [PLAYER.position[0] + 1, PLAYER.position[1]]
+                    if new_coord[0] not in range(MAPWIDTH):
+                        increment = 0
+                        case = 1
+                    elif tilemap[new_coord[1]][new_coord[0]] not in PASSABLE:
+                        increment = 0
+                        case = 2
+                    else:
+                        for player in listPLAYERS + listENEMIES:
+                            if new_coord == player.position:
+                                increment = 0
+                                case = 3
+                    PLAYER.position[0] += increment
+                    PLAYER.decrement_Moves(increment)
 
-	# Display players and cursor
-	DISPLAYSURF.blit(Cursor,(cursorPos[0]*TILESIZE,cursorPos[1]*TILESIZE))
-	for player in listPLAYERS:
-		DISPLAYSURF.blit(player.sprite,(player.position[0]*TILESIZE,player.position[1]*TILESIZE))
+                if (event.key == K_a and PLAYER.moves_left>0):
+                    PLAYER.facing = 'LEFT'
+                    increment = 1
+                    case = 0
+                    new_coord = [PLAYER.position[0] - 1, PLAYER.position[1]]
+                    if new_coord[0] not in range(MAPWIDTH):
+                        increment = 0
+                        case = 1
+                    elif tilemap[new_coord[1]][new_coord[0]] not in PASSABLE:
+                        increment = 0
+                        case = 2
+                    else:
+                        for player in listPLAYERS + listENEMIES:
+                            if new_coord == player.position:
+                                increment = 0
+                                case = 3
+                    PLAYER.position[0] -= increment
+                    PLAYER.decrement_Moves(increment)
 
-	# Display DEBUG Information
-	if DEBUG:
-		placePosition = 5
-		Text_Char_Pos = INVFONT.render('Character Position: {}'.format(PLAYER.position) + '  ', True, WHITE, BLACK)
-		DISPLAYSURF.blit(Text_Char_Pos,(placePosition,MAPHEIGHT*TILESIZE))
+                if (event.key == K_w and PLAYER.moves_left>0):
+                    PLAYER.facing = 'UP'
+                    increment = 1
+                    case = 0
+                    new_coord = [PLAYER.position[0], PLAYER.position[1] - 1]
+                    if new_coord[1] not in range(MAPHEIGHT):
+                        increment = 0
+                        case = 1
+                    elif tilemap[new_coord[1]][new_coord[0]] not in PASSABLE:
+                        increment = 0
+                        case = 2
+                    else:
+                        for player in listPLAYERS + listENEMIES:
+                            if new_coord == player.position:
+                                increment = 0
+                                case = 3
+                    PLAYER.position[1] -= increment
+                    PLAYER.decrement_Moves(increment)
 
-		mouse_coord = [pygame.mouse.get_pos()[0]/TILESIZE, pygame.mouse.get_pos()[1]/TILESIZE]
-		Text_Mouse_Pos = INVFONT.render('Cursor Position: ' + str(mouse_coord) + '  ', True, WHITE, BLACK)
-		DISPLAYSURF.blit(Text_Mouse_Pos,(placePosition,MAPHEIGHT*TILESIZE+15))
+                if (event.key == K_s and PLAYER.moves_left>0):
+                    PLAYER.facing = 'DOWN'
+                    increment = 1
+                    case = 0
+                    new_coord = [PLAYER.position[0], PLAYER.position[1] + 1]
+                    if new_coord[1] not in range(MAPHEIGHT):
+                        increment = 0
+                        case = 1
+                    elif tilemap[new_coord[1]][new_coord[0]] not in PASSABLE:
+                        increment = 0
+                        case = 2
+                    else:
+                        for player in listPLAYERS + listENEMIES:
+                            if new_coord == player.position:
+                                increment = 0
+                                case = 3
+                    PLAYER.position[1] += increment
+                    PLAYER.decrement_Moves(increment)
 
-		Text_Button_Facing = INVFONT.render('Direction Facing: ' + str(PLAYER.facing) + 9 * '  ', True, WHITE, BLACK)
-		DISPLAYSURF.blit(Text_Button_Facing,(placePosition,MAPHEIGHT*TILESIZE+30))
+                if (event.key == K_RETURN):
+                    for player in listPLAYERS:
+                        player.decrement_Moves(player.max_moves)
 
-		Text_New_Coords = INVFONT.render('Desired Coordinates: ' + str(new_coord) + '  ', True, WHITE, BLACK)
-		DISPLAYSURF.blit(Text_New_Coords,(placePosition, MAPHEIGHT*TILESIZE+45))
+                allDone=True
+                for player in listPLAYERS:
+                    if(player.moves_left > 0):
+                        allDone=False
+                        break
+                if allDone:
+                    phase = 'Attack'
+                    for player in listPLAYERS:
+                        player.start_turn()
 
-		error_cases = {
-				1 : 'OUT OF BOUNDS',
-				2 : 'IMPASSABLE TERRAIN',
-				3 : 'CHARACTER OCCUPYING TILE',
-				4 : 'MOVEMENT COOLDOWN'
-			      }
-		Text_Valid = INVFONT.render(1000 * ' ', True, BLACK, BLACK)
-		if case != 0:
-			Text_Valid = INVFONT.render('INVALID COMMAND: {}'.format(error_cases[case]) + 10*'   ', True, RED, BLACK)
-		DISPLAYSURF.blit(Text_Valid,(placePosition, MAPHEIGHT*TILESIZE+60))
-			
-		Text_Char_Selected = INVFONT.render('Currently Selected: ' + PLAYER.name + '        ', True, WHITE, BLACK)
-		DISPLAYSURF.blit(Text_Char_Selected,(placePosition, MAPHEIGHT*TILESIZE+75))
+        else: # Attack phase
+            if pygame.mouse.get_pressed()[0]:
+                new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
+                for player in listPLAYERS:
+                    if player.position == new_coord:
+                        PLAYER = player
+                for enemy in listENEMIES:
+                    if enemy.position == new_coord and gridDistance(new_coord, PLAYER.position)<=PLAYER.range:
+                        attack(PLAYER, enemy)
+            elif (event.type == KEYDOWN):
+                if (event.key == K_RETURN):
+                    for player in listPLAYERS:
+                        player.giveHit()
+            allDone = True
+            canAttack = False
+            for player in listPLAYERS:
+                if (not player.has_attacked):
+                    allDone = False
+                    for enemy in listENEMIES:
+                        if gridDistance(player.position, enemy.position) <= player.range:
+                            canAttack = True
+                            break
 
-		Text_Hotkey1 = INVFONT.render('1 : {}'.format(HOTKEYS[1].name) + 5*'  ', True, WHITE, BLACK)
-		Text_Hotkey2 = INVFONT.render('2 : {}'.format(HOTKEYS[2].name) + 5*'  ', True, WHITE, BLACK)
-		Text_Hotkey3 = INVFONT.render('3 : {}'.format(HOTKEYS[3].name) + 5*'  ', True, WHITE, BLACK)
-		Text_Hotkey4 = INVFONT.render('4 : {}'.format(HOTKEYS[4].name) + 5*'  ', True, WHITE, BLACK)
-		DISPLAYSURF.blit(Text_Hotkey1,(placePosition + 200, MAPHEIGHT * TILESIZE))
-		DISPLAYSURF.blit(Text_Hotkey2,(placePosition + 200, MAPHEIGHT * TILESIZE + 15))
-		DISPLAYSURF.blit(Text_Hotkey3,(placePosition + 200, MAPHEIGHT * TILESIZE + 30))
-		DISPLAYSURF.blit(Text_Hotkey4,(placePosition + 200, MAPHEIGHT * TILESIZE + 45))
+            if allDone or not canAttack:
+                phase = 'Move'
+                turn= 'Red'
+                for player in listPLAYERS:
+                    player.start_turn()
 
-#		Text_Walk_Cooldown = INVFONT.render('Current Char CD: ' + str(PLAYER.move_current_cd) + (20*' '), True, WHITE, BLACK)
-#		DISPLAYSURF.blit(Text_Walk_Cooldown,(placePosition + 175, MAPHEIGHT*TILESIZE))
+    # Display map sprites
+    for row in range(MAPHEIGHT):
+        for column in range(MAPWIDTH):
+            DISPLAYSURF.blit(RescaleImage(textures[tilemap[row][column]]), (column * TILESIZE, row * TILESIZE))
 
-		current_terrain = terrains[tilemap[PLAYER.position[1]][PLAYER.position[0]]]
-		Text_Terrain = INVFONT.render('Terrain: ' + str(current_terrain) + (9*'  '), True, WHITE, BLACK)
-		DISPLAYSURF.blit(Text_Terrain,(placePosition, MAPHEIGHT*TILESIZE+90))
+    # Display players and cursor
+    for player in listPLAYERS + listENEMIES:
+        DISPLAYSURF.blit(RescaleImage(player.sprite), (player.position[0] * TILESIZE, player.position[1] * TILESIZE))
+    DISPLAYSURF.blit(RescaleImage(Cursor), (cursorPos[0] * TILESIZE, cursorPos[1] * TILESIZE))
 
-	pygame.display.update()
+    # Display Tooltip Information
+    if DEBUG:
+        pygame.draw.rect(DISPLAYSURF,(0,0,0),pygame.Rect(0,MAPHEIGHT * TILESIZE,nextWidth,nextHeight-MAPHEIGHT * TILESIZE))
+
+        placePosition = 5
+
+        # Selected Character
+        DISPLAYSURF.blit(RescaleImage(PLAYER.sprite), (placePosition, MAPHEIGHT * TILESIZE))
+        Text_Name_Coords = INVFONT.render(
+            'Name: ' + str(PLAYER.name) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE))
+        Text_Health_Coords = INVFONT.render(
+            'Health: ' + str(PLAYER.health) + '/' + str(PLAYER.max_health) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 15))
+        Text_Move_Coords = INVFONT.render(
+            'Moves: ' + str(PLAYER.moves_left) + '/' + str(PLAYER.max_moves) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 30))
+        Text_Range_Coords = INVFONT.render(
+            'Range: ' + str(PLAYER.range) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 45))
+        Text_Damage_Coords = INVFONT.render(
+            'Damage: ' + str(PLAYER.damage) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 60))
+
+        # Moused over character
+        new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
+        for player in listPLAYERS + listENEMIES:
+            if new_coord == player.position:
+                DISPLAYSURF.blit(RescaleImage(player.sprite), (placePosition + 275, MAPHEIGHT * TILESIZE))
+                Text_Name_Coords = INVFONT.render(
+                    'Name: ' + str(player.name) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE))
+                Text_Health_Coords = INVFONT.render('Health: ' + str(player.health) + '/' + str(player.max_health) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 15))
+                Text_Move_Coords = INVFONT.render('Moves: ' + str(player.moves_left) + '/' + str(player.max_moves) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 30))
+                Text_Range_Coords = INVFONT.render(
+                    'Range: ' + str(player.range) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 45))
+                Text_Damage_Coords = INVFONT.render(
+                    'Damage: ' + str(player.damage) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 60))
+
+
+
+        error_cases = {
+            1: 'OUT OF BOUNDS',
+            2: 'IMPASSABLE TERRAIN',
+            3: 'CHARACTER OCCUPYING TILE',
+            4: 'MOVEMENT COOLDOWN'
+        }
+        Text_Valid = INVFONT.render(1000 * ' ', True, BLACK, BLACK)
+        if case != 0:
+            Text_Valid = INVFONT.render('INVALID COMMAND: {}'.format(error_cases[case]) + 10 * '   ', True, RED, BLACK)
+        DISPLAYSURF.blit(Text_Valid, (placePosition, MAPHEIGHT * TILESIZE + 90))
+
+        # Text_Char_Selected = INVFONT.render('Currently Selected: ' + PLAYER.name + '        ', True, WHITE, BLACK)
+        # DISPLAYSURF.blit(Text_Char_Selected, (placePosition, MAPHEIGHT * TILESIZE + 75))
+
+        # Text_Hotkey1 = INVFONT.render('1 : {}'.format(HOTKEYS[1].name) + 5 * '  ', True, WHITE, BLACK)
+        # Text_Hotkey2 = INVFONT.render('2 : {}'.format(HOTKEYS[2].name) + 5 * '  ', True, WHITE, BLACK)
+        # Text_Hotkey3 = INVFONT.render('3 : {}'.format(HOTKEYS[3].name) + 5 * '  ', True, WHITE, BLACK)
+        # Text_Hotkey4 = INVFONT.render('4 : {}'.format(HOTKEYS[4].name) + 5 * '  ', True, WHITE, BLACK)
+        # DISPLAYSURF.blit(Text_Hotkey1, (placePosition + 200, MAPHEIGHT * TILESIZE))
+        # DISPLAYSURF.blit(Text_Hotkey2, (placePosition + 200, MAPHEIGHT * TILESIZE + 15))
+        # DISPLAYSURF.blit(Text_Hotkey3, (placePosition + 200, MAPHEIGHT * TILESIZE + 30))
+        # DISPLAYSURF.blit(Text_Hotkey4, (placePosition + 200, MAPHEIGHT * TILESIZE + 45))
+
+        #		Text_Walk_Cooldown = INVFONT.render('Current Char CD: ' + str(PLAYER.move_current_cd) + (20*' '), True, WHITE, BLACK)
+        #		DISPLAYSURF.blit(Text_Walk_Cooldown,(placePosition + 175, MAPHEIGHT*TILESIZE))
+
+    pygame.display.update()
