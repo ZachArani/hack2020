@@ -460,10 +460,10 @@ while True:
                 red_image.fill((180, 0, 0))
                 for row in range(MAPHEIGHT):
                     for column in range(MAPWIDTH):
-                        if gridDistance(player.position, [column,row])<= player.max_moves:
+                        if gridDistance(player.position, [column,row])<= player.moves_left:
                             DISPLAYSURF.blit(blue_image,
                                          (column * TILESIZE, row * TILESIZE))
-                        elif gridDistance(player.position, [column,row])<= player.max_moves+player.range:
+                        elif gridDistance(player.position, [column,row])<= player.moves_left+player.range:
                             DISPLAYSURF.blit(red_image,
                                          (column * TILESIZE, row * TILESIZE))
 
