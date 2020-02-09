@@ -386,14 +386,14 @@ def redTurn():
     textpos = text.get_rect()
     textpos.centerx = DISPLAYSURF.get_rect().centerx
     textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
-    DISPLAYSURF.blit(text, textpos)
 
     #DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
     pygame.display.update()
     time.sleep(2)
     if len(listPLAYERS) != 0:
         drawCharacters()
-        DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+        DISPLAYSURF.blit(text, textpos)
+        #DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
         pygame.display.update()
         time.sleep(.4)
 
@@ -611,12 +611,12 @@ while True:
                 textpos = text.get_rect()
                 textpos.centerx = DISPLAYSURF.get_rect().centerx
                 textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
-                DISPLAYSURF.blit(text, textpos)
                 #DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
                 pygame.display.update()
                 time.sleep(2)
                 if len(listENEMIES) != 0:
-                    DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
+                    DISPLAYSURF.blit(text, textpos)
+                    #DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
                     pygame.display.update()
                     time.sleep(.5)
                 for player in listPLAYERS:
