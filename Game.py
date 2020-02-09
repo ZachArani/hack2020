@@ -99,15 +99,15 @@ turn='Green'
 phase='Move'
 
 # Initialize Players and Positions
-Asparagus = Player('Asparagus', os.path.join(current_path,'CharacterSprites/asparagus.png'), [10, 9], 'Green', range=2)
+Asparagus = Player('Asparaguy', os.path.join(current_path,'CharacterSprites/asparagus.png'), [10, 9], 'Green')
 Kohlrabi = Player('Kohlrabi', os.path.join(current_path,'CharacterSprites/kohlrabi.png'), [9, 9], 'Green')
 Sugarcane = Player('Sugarcane', os.path.join(current_path,'CharacterSprites/sugarcane.png'), [8, 9], 'Green')
 listPLAYERS = [Asparagus, Kohlrabi, Sugarcane]
 
 
-Broccoli = Player('Broccoli', os.path.join(current_path,'CharacterSprites/broccoli.png'), [0, 1], 'Red')
-Cinnamon = Player('Cinnamon', os.path.join(current_path,'CharacterSprites/cinnamon.png'), [2, 1], 'Red')
-Wasabi = Player('Wasabi', os.path.join(current_path,'CharacterSprites/wasabi.png'), [9, 8], 'Red')
+Broccoli = Player('Broccoli', os.path.join(current_path,'CharacterSprites/broccoli.png'), [2, 1], 'Red')
+Cinnamon = Player('Cinnamon', os.path.join(current_path,'CharacterSprites/cinnamon.png'), [9, 1], 'Red')
+Wasabi = Player('Wasabi', os.path.join(current_path,'CharacterSprites/wasabi.png'), [0, 1], 'Red',range=3)
 listENEMIES = [Broccoli, Cinnamon, Wasabi]
 
 
