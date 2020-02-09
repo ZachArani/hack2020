@@ -106,6 +106,10 @@ playerAttack = pygame.transform.scale(pygame.image.load(os.path.join(current_pat
 playerMove = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/play_move.png')),(5*TILESIZE, 2*TILESIZE))
 opponentMove = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/opp_move.png')), (5*TILESIZE, 2*TILESIZE))
 opponentAttack = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/opp_attack.png')), (5*TILESIZE, 2*TILESIZE))
+youWin = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/you_win.png')), (5*TILESIZE, 2*TILESIZE))
+youLose = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/you_lose.png')), (5*TILESIZE, 2*TILESIZE))
+
+
 
 walk_delay = 1
 walk_cd = 0
@@ -167,7 +171,7 @@ def redTurn():
                 time.sleep(0.4)
     DISPLAYSURF.blit(opponentAttack, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
     pygame.display.update()
-    time.sleep(2)
+    time.sleep(.5)
     for enemy in listENEMIES:
         for player in listPLAYERS:
             if gridDistance(player.position,enemy.position)==1:
@@ -176,9 +180,10 @@ def redTurn():
                 drawCharacters()
                 pygame.display.update()
                 time.sleep(0.4)
-    DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
-    pygame.display.update()
-    time.sleep(2)
+    if len(listPLAYERS) != 0:
+        DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+        pygame.display.update()
+        time.sleep(.5)
 
         #if can_hit go to it
     #Attacks
@@ -195,13 +200,26 @@ def drawCharacters():
     for player in listPLAYERS + listENEMIES:
         DISPLAYSURF.blit(RescaleImage(player.sprite), (player.position[0] * TILESIZE, player.position[1] * TILESIZE))
 while True:
+
+    if len(listENEMIES) == 0:
+        DISPLAYSURF.blit(youWin, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+        pygame.display.update()
+        time.sleep(5)
+        break
+
+    elif len(listPLAYERS) == 0:
+        DISPLAYSURF.blit(youLose, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+        pygame.display.update()
+        time.sleep(5)
+        break
+
     if turn == 'Red':
         redTurn()
         turn ='Green'
         time.sleep(1)
         for enemy in listENEMIES:
             enemy.start_turn()
-    if not PLAYER in listPLAYERS:
+    if not PLAYER in listPLAYERS and len(listPLAYERS) != 0:
         PLAYER=listPLAYERS[0]
     TILESIZE = int(nextWidth / MAPWIDTH)
 
@@ -230,6 +248,7 @@ while True:
         elif (event.type == QUIT):
             pygame.quit()
             sys.exit()
+
 
         # Mouse inputs
 
@@ -350,7 +369,7 @@ while True:
                     phase = 'Attack'
                     DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
                     pygame.display.update()
-                    time.sleep(2)
+                    time.sleep(.5)
                     for player in listPLAYERS:
                         player.start_turn()
 
@@ -380,9 +399,10 @@ while True:
             if allDone or not canAttack:
                 phase = 'Move'
                 turn= 'Red'
-                DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
-                pygame.display.update()
-                time.sleep(2)
+                if len(listENEMIES) != 0:
+                    DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
+                    pygame.display.update()
+                    time.sleep(.5)
                 for player in listPLAYERS:
                     player.start_turn()
 
@@ -451,5 +471,4 @@ while True:
         if case != 0:
             Text_Valid = INVFONT.render('INVALID COMMAND: {}'.format(error_cases[case]) + 10 * '   ', True, RED, BLACK)
         DISPLAYSURF.blit(Text_Valid, (placePosition, MAPHEIGHT * TILESIZE + 90))
-
     pygame.display.update()
