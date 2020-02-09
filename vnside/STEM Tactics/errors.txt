@@ -1,0 +1,22 @@
+﻿I'm sorry, but errors were detected in your script. Please correct the
+errors listed below, and try again.
+
+
+File "game/script.rpy", line 66: expected statement.
+    _preferences.afm_enable = True
+                            ^
+
+File "game/script.rpy", line 67: expected statement.
+    _preferences.afm_time = 3
+                          ^
+
+File "game/script.rpy", line 144: expected statement.
+    _preferences.afm_enable = True
+                            ^
+
+File "game/script.rpy", line 145: expected statement.
+    _preferences.afm_time = 3
+                          ^
+
+Ren'Py Version: Ren'Py 7.3.5.606
+Sat Feb  8 17:39:31 2020

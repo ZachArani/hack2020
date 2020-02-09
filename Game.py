@@ -7,6 +7,10 @@ import time
 import os
 
 
+from operator import itemgetter
+import time
+from random import shuffle
+
 current_path = os.path.dirname(__file__)
 
 def RescaleImage(image):
@@ -19,9 +23,60 @@ def attack(fromCharacter,toCharacter):
     if not fromCharacter.has_attacked:
         toCharacter.takeHit(fromCharacter.giveHit())
         if not toCharacter.isAlive:
-            listENEMIES.remove(toCharacter)
+            if toCharacter in listENEMIES:
+                listENEMIES.remove(toCharacter)
+            else:
+                listPLAYERS.remove(toCharacter)
     else:
         print("This character can't attack twice!")
+def incrementAdjacent(dist,row,column,parent,toCharacter):
+    for xinc,yinc in [[1,0],[0,1],[-1,0],[0,-1]]:
+        #print(str(xinc)+" "+str(row)+" "+str(xinc+row))
+        newPos=[column+yinc,row+xinc]
+        good=True
+        for character in listPLAYERS+listENEMIES:
+            if newPos == character.position and not character.position==toCharacter.position:
+                good=False
+                break
+        if good and row+xinc<len(tilemap) and column+yinc<len(tilemap[0]) and row+xinc>-1 and column+yinc>-1:
+            if dist[row+xinc][column+yinc] > dist[row][column] and not tilemap[row+xinc][column+yinc] in NOT_PASSABLE:
+                dist[row+xinc][column+yinc]=dist[row][column]+1
+                parent[(row+xinc,column+yinc)]=(row,column)
+
+def scuffedDijkstra(fromCharacter, toCharacter):
+    parent={}
+    startPos = toCharacter.position
+    print(startPos)
+    endPos=fromCharacter.position
+
+    #set all to infinity
+    dist = [[30 for x in range(len(tilemap[0]))] for x in range(len(tilemap))]
+    explored=[startPos]
+    dist[startPos[1]][startPos[0]]=0
+
+
+    while len(explored)<len(tilemap)*len(tilemap[0])-len(NOT_PASSABLE):
+        minVal=29
+        minRow=-1
+        minTile=-1
+        for row_index in range(len(tilemap)):
+            for tile_index in range(len(tilemap[row_index])):
+                tile=tilemap[row_index][tile_index]
+                distance=dist[row_index][tile_index]
+                if not tile in NOT_PASSABLE and not [row_index,tile_index] in explored and not distance ==30:
+                    if distance<minVal:
+                        minVal=distance
+                        minRow=row_index
+                        minTile=tile_index
+        explored.append([minRow,minTile])
+        incrementAdjacent(dist,minRow,minTile,parent,fromCharacter)
+        if [minTile,minRow]==endPos:
+            for d in dist:
+                print(d)
+            return [dist[minRow][minTile],parent]
+    for d in dist:
+        print (d)
+    return -1,parent
 
 # Turn Debug mode on and off
 DEBUG = True
@@ -40,10 +95,12 @@ Kohlrabi = Player('Broccoli', os.path.join(current_path,'CharacterSprites/kohlra
 Sugarcane = Player('Archer', os.path.join(current_path,'CharacterSprites/sugarcane.png'), [8, 9], 'Green')
 listPLAYERS = [Asparagus, Kohlrabi, Sugarcane]
 
+
 Broccoli = Player('Broccoli', os.path.join(current_path,'CharacterSprites/broccoli.png'), [0, 1], 'Red')
 Cinnamon = Player('Cinnamon', os.path.join(current_path,'CharacterSprites/cinnamon.png'), [2, 1], 'Red')
 Wasabi = Player('Wasabi', os.path.join(current_path,'CharacterSprites/wasabi.png'), [9, 8], 'Red')
 listENEMIES = [Broccoli, Cinnamon, Wasabi]
+
 
 playerAttack = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/play_attack.png')),(5*TILESIZE, 2*TILESIZE))
 opponentMove = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/opp_move.png')), (5*TILESIZE, 2*TILESIZE))
@@ -81,8 +138,62 @@ else:
 DISPLAYSURF = pygame.display.set_mode((MAPWIDTH * TILESIZE, MAPHEIGHT * TILESIZE + const), RESIZABLE)
 nextWidth=MAPWIDTH * TILESIZE
 nextHeight= MAPHEIGHT * TILESIZE + const
-while True:
 
+
+def redTurn():
+    #Moves
+    for enemy in listENEMIES:
+        closest=None
+        for player in listPLAYERS:
+            if closest is None:
+                closest = player
+            else:
+                if gridDistance(player.position, enemy.position) < gridDistance(closest.position, enemy.position):
+                    closest = player
+        answer=scuffedDijkstra(enemy,closest)
+        closest_dist=answer[0]
+        parent=answer[1]
+        #numparentmoves=closest_dist-
+        print(closest_dist)
+        if closest_dist>1:
+            n=min(enemy.max_moves,closest_dist-1)
+            for x in range(n):
+                nextPos=parent[(enemy.position[1],enemy.position[0])]
+                enemy.position=[nextPos[1],nextPos[0]]
+                drawCharacters()
+                pygame.display.update()
+                time.sleep(0.4)
+        for player in listPLAYERS:
+            if gridDistance(player.position,enemy.position)==1:
+                attack(enemy,player)
+                enemy.giveHit()
+                drawCharacters()
+                pygame.display.update()
+                time.sleep(0.4)
+
+        #if can_hit go to it
+    #Attacks
+
+turn='Green'
+def drawCharacters():
+    # Display map sprites
+    for row in range(MAPHEIGHT):
+        for column in range(MAPWIDTH):
+            DISPLAYSURF.blit(RescaleImage(textures[tilemap[row][column]]), (column * TILESIZE, row * TILESIZE))
+
+    # Display players and cursor
+    for player in listPLAYERS + listENEMIES:
+        DISPLAYSURF.blit(RescaleImage(player.sprite), (player.position[0] * TILESIZE, player.position[1] * TILESIZE))
+    DISPLAYSURF.blit(RescaleImage(Cursor), (cursorPos[0] * TILESIZE, cursorPos[1] * TILESIZE))
+while True:
+    if turn == 'Red':
+        redTurn()
+        turn ='Green'
+        time.sleep(1)
+        for enemy in listENEMIES:
+            enemy.start_turn()
+    if not PLAYER in listPLAYERS:
+        PLAYER=listPLAYERS[0]
     TILESIZE = int(nextWidth / MAPWIDTH)
     #DISPLAYSURF = pygame.display.set_mode((MAPWIDTH * TILESIZE, MAPHEIGHT * TILESIZE + const), RESIZABLE)
     #DISPLAYSURF.update()
