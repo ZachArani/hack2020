@@ -63,6 +63,7 @@ label start:
     a "{i}(Another day of class. It's been a rough week, but I've made it through. It's nearly the weekend, and best of all -- no tests today!){/i}"
 
     scene classroom
+    play lecture classtime loop
 
     show char sugarcane
 
@@ -146,7 +147,7 @@ label start:
     t "Hm... I see. Well, in any case, today we will be reviewing some of the more pertinent aspects of the Computer History curriculum. We’re going back to the origin of computer history...even before {i}my time.{/i}"
 
     play lecture lecturetimeintro
-    play lecture lecturetimeloop loop
+    queue lecture lecturetimeloop loop
     show text "{=lecture}LECTURE BEGIN{/=lecture}" at truecenter
     with dissolve
     pause 1
