@@ -8,16 +8,42 @@ import os
 import pygameMenu
 import questionMenu as menu
 
-
 from operator import itemgetter
 import time
 from random import shuffle
 
 current_path = os.path.dirname(__file__)
 
+
+
+class Question(object):
+    def __init__(self, question, answers, correctAnswer):
+        self.questionFont = pygame.font.SysFont('FreeSerif', 35)
+        fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
+                      rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 0.85, DISPLAYSURF.get_rect().width - 12,
+                                       100), forward=False)
+        DISPLAYSURF.blit(self.questionFont.render(question, 1, (255, 255, 255)), (10, DISPLAYSURF.get_rect().centery * 0.85))
+
+        fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
+                      rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.10, DISPLAYSURF.get_rect().width * 0.48,
+                                       80), forward=False)
+
+        fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
+                      rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5, DISPLAYSURF.get_rect().centery * 1.10,
+                                       DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
+
+        fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
+                      rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.30, DISPLAYSURF.get_rect().width * 0.48,
+                                       80), forward=False)
+        fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
+                      rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5, DISPLAYSURF.get_rect().centery * 1.30,
+                                       DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
+
+
 pygame.mixer.init()
 pygame.mixer.music.load(os.path.join(current_path, "Music/battletime.ogg"))
 pygame.mixer.music.play(-1);
+
 
 def RescaleImage(image):
     return pygame.transform.scale(image, (TILESIZE, TILESIZE))
@@ -25,6 +51,63 @@ def RescaleImage(image):
 def gridDistance(pos1, pos2):
     return abs(pos1[0]-pos2[0])+abs(pos1[1]-pos2[1])
 
+def donothing():
+    x=2
+
+def fill_gradient(surface, color, gradient, rect=None, vertical=True, forward=True):
+    """fill a surface with a gradient pattern
+    Parameters:
+    color -> starting color
+    gradient -> final color
+    rect -> area to fill; default is surface's rect
+    vertical -> True=vertical; False=horizontal
+    forward -> True=forward; False=reverse
+
+    Pygame recipe: http://www.pygame.org/wiki/GradientCode
+    """
+    if rect is None: rect = surface.get_rect()
+    x1, x2 = rect.left, rect.right
+    y1, y2 = rect.top, rect.bottom
+    if vertical:
+        h = y2 - y1
+    else:
+        h = x2 - x1
+    if forward:
+        a, b = color, gradient
+    else:
+        b, a = color, gradient
+    rate = (
+        float(b[0] - a[0]) / h,
+        float(b[1] - a[1]) / h,
+        float(b[2] - a[2]) / h
+    )
+    fn_line = pygame.draw.line
+    if vertical:
+        for line in range(y1, y2):
+            color = (
+                min(max(a[0] + (rate[0] * (line - y1)), 0), 255),
+                min(max(a[1] + (rate[1] * (line - y1)), 0), 255),
+                min(max(a[2] + (rate[2] * (line - y1)), 0), 255)
+            )
+            fn_line(surface, color, (x1, line), (x2, line))
+    else:
+        for col in range(x1, x2):
+            color = (
+                min(max(a[0] + (rate[0] * (col - x1)), 0), 255),
+                min(max(a[1] + (rate[1] * (col - x1)), 0), 255),
+                min(max(a[2] + (rate[2] * (col - x1)), 0), 255)
+            )
+            fn_line(surface, color, (col, y1), (col, y2))
+
+
+def attack(fromCharacter,toCharacter):
+    menuSurface = pygame.Surface((240,180))
+    menuSurface.fill((40,40,40))
+    print(DISPLAYSURF.blit(pygame.image.load('Textures/bleachers.png'), [80, 10]))
+    pygame.display.update()
+    #testMenu = pygameMenu.Menu(surface=DISPLAYSURF, bgfun=test_background, font=pygameMenu.font.FONT_HELVETICA, font_color=(0, 0, 0), font_size=25, window_height=200, window_width=400, title="test")
+
+   # menu.main()
 def attack(fromCharacter,toCharacter):
     #menu.main()
     if not fromCharacter.has_attacked:
@@ -146,7 +229,9 @@ cursorPos = PLAYER.position
 pygame.init()
 if DEBUG:
     const = 200
-    INVFONT = pygame.font.SysFont('FreeSans.tff', 25)
+    INVFONT = pygame.font.SysFont('FreeSans.tff', 18)
+    testFont = pygame.font.SysFont('FreeSerif', 45, italic=True)
+    questionFont = pygame.font.SysFont('FreeSerif', 25)
 
 else:
     const = 0
@@ -180,8 +265,12 @@ def redTurn():
                 drawCharacters()
                 pygame.display.update()
                 time.sleep(0.4)
-
-    DISPLAYSURF.blit(opponentAttack, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+    text = testFont.render("OPPONENT ATTACK PHASE", 1, (250, 80, 94))
+    textpos = text.get_rect()
+    textpos.centerx = DISPLAYSURF.get_rect().centerx
+    textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
+    DISPLAYSURF.blit(text, textpos)
+    #DISPLAYSURF.blit(opponentAttack, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
     pygame.display.update()
     time.sleep(.5)
     for enemy in listENEMIES:
@@ -192,6 +281,15 @@ def redTurn():
                 drawCharacters()
                 pygame.display.update()
                 time.sleep(0.4)
+    text = testFont.render("PLAYER MOVE PHASE", 1, (80, 108, 250))
+    textpos = text.get_rect()
+    textpos.centerx = DISPLAYSURF.get_rect().centerx
+    textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
+    DISPLAYSURF.blit(text, textpos)
+
+    #DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+    pygame.display.update()
+    time.sleep(2)
     if len(listPLAYERS) != 0:
         drawCharacters()
         DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
@@ -365,7 +463,24 @@ while True:
                     drawCharacters()
                     pygame.display.update()
                     phase = 'Attack'
-                    DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
+
+
+
+                    text = testFont.render("PLAYER ATTACK PHASE", 1, (80, 108, 250))
+                    textpos = text.get_rect()
+                    textpos.centerx = DISPLAYSURF.get_rect().centerx
+                    textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
+                    DISPLAYSURF.blit(text, textpos)
+
+                    #fill_gradient(DISPLAYSURF, color=(80,108,250), gradient=(16, 12, 97), rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 0.85, DISPLAYSURF.get_rect().width-12, 100), forward=False)
+
+                    #fill_gradient(DISPLAYSURF, color=(80,108,250), gradient=(16, 12, 97), rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.10, DISPLAYSURF.get_rect().width * 0.48, 80), forward=False)
+                    #fill_gradient(DISPLAYSURF, color=(80,108,250), gradient=(16, 12, 97), rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5 , DISPLAYSURF.get_rect().centery * 1.10, DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
+
+                    #fill_gradient(DISPLAYSURF, color=(80,108,250), gradient=(16, 12, 97), rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.30, DISPLAYSURF.get_rect().width * 0.48, 80), forward=False)
+                    #fill_gradient(DISPLAYSURF, color=(80,108,250), gradient=(16, 12, 97), rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5 , DISPLAYSURF.get_rect().centery * 1.30, DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
+                    Question('test')
+                  #  DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
                     pygame.display.update()
                     time.sleep(.5)
                     for player in listPLAYERS:
@@ -397,6 +512,14 @@ while True:
             if allDone or not canAttack:
                 phase = 'Move'
                 turn= 'Red'
+                text = testFont.render("OPPONENT MOVE PHASE", 1, (250, 80, 94))
+                textpos = text.get_rect()
+                textpos.centerx = DISPLAYSURF.get_rect().centerx
+                textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
+                DISPLAYSURF.blit(text, textpos)
+                #DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
+                pygame.display.update()
+                time.sleep(2)
                 if len(listENEMIES) != 0:
                     DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
                     pygame.display.update()
