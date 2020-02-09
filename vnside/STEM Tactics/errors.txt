@@ -2,21 +2,9 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 66: expected statement.
-    _preferences.afm_enable = True
-                            ^
-
-File "game/script.rpy", line 67: expected statement.
-    _preferences.afm_time = 3
-                          ^
-
-File "game/script.rpy", line 144: expected statement.
-    _preferences.afm_enable = True
-                            ^
-
-File "game/script.rpy", line 145: expected statement.
-    _preferences.afm_time = 3
-                          ^
+File "game/script.rpy", line 19: style property outline is not known.
+    outline [(1, "000000", 0, 0)]
+           ^
 
 Ren'Py Version: Ren'Py 7.3.5.606
-Sat Feb  8 17:39:31 2020
+Sat Feb  8 19:01:19 2020
