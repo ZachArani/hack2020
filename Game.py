@@ -154,7 +154,7 @@ nextHeight= MAPHEIGHT * TILESIZE + const
 
 
 def redTurn():
-    #Moves
+    #Move
     for enemy in listENEMIES:
         closest=None
         for player in listPLAYERS:
