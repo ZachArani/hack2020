@@ -4,7 +4,7 @@ from time import *
 
 class Player:
 
-	def __init__(self, name, image, position,team,range=1,max_health=50, damage=25):
+	def __init__(self, name, image, position,team,range=1,max_health=50, damage=25, max_moves=3):
 		self.name = name
 		self.sprite = pygame.image.load(image)
 		self.original_sprite=image
@@ -18,7 +18,7 @@ class Player:
 
 		self.has_attacked=False
 		self.moves_left=3
-		self.max_moves=10
+		self.max_moves=3
 
 		self.max_health=max_health
 		self.health=self.max_health
