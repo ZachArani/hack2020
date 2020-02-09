@@ -39,7 +39,7 @@ class Question(object):
     def __init__(self, question, answers, correctAnswer):
         selected = False
         selectedNo = 0
-        self.questionFont = pygame.font.SysFont('FreeSerif', 35)
+        self.questionFont = pygame.font.SysFont('FreeSerif', 25)
         self.answerFont = pygame.font.SysFont('FreeSerif', 25)
         self.question = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
                       rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 0.85, DISPLAYSURF.get_rect().width - 12,
@@ -72,7 +72,7 @@ class Question(object):
                                         rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.10,
                                                          DISPLAYSURF.get_rect().width * 0.48,
                                                          80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Ada Lovelace", 1, (255, 255, 255)),
+                DISPLAYSURF.blit(self.answerFont.render(answers[0], 1, (255, 255, 255)),
                                  (10, DISPLAYSURF.get_rect().centery * 1.10))
                 if pygame.mouse.get_pressed()[0]:
                     selectedNo = 1
@@ -82,14 +82,14 @@ class Question(object):
                                         rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.10,
                                                          DISPLAYSURF.get_rect().width * 0.48,
                                                          80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Ada Lovelace", 1, (255, 255, 255)),
+                DISPLAYSURF.blit(self.answerFont.render(answers[0], 1, (255, 255, 255)),
                                  (10, DISPLAYSURF.get_rect().centery * 1.10))
             if self.a2.collidepoint(pygame.mouse.get_pos()):
                 self.a2 = fill_gradient(DISPLAYSURF, color=(235, 64, 52), gradient=(158, 27, 17),
                                         rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5,
                                                          DISPLAYSURF.get_rect().centery * 1.10,
                                                          DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Grace Hopper", 1, (255, 255, 255)),
+                DISPLAYSURF.blit(self.answerFont.render(answers[1], 1, (255, 255, 255)),
                                  (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.10))
                 if pygame.mouse.get_pressed()[0]:
                     selectedNo = 2
@@ -99,14 +99,14 @@ class Question(object):
                                         rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5,
                                                          DISPLAYSURF.get_rect().centery * 1.10,
                                                          DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Grace Hopper", 1, (255, 255, 255)),
+                DISPLAYSURF.blit(self.answerFont.render(answers[1], 1, (255, 255, 255)),
                                  (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.10))
             if self.a3.collidepoint(pygame.mouse.get_pos()):
                 self.a3 = fill_gradient(DISPLAYSURF, color=(235, 64, 52), gradient=(158, 27, 17),
                                         rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.30,
                                                          DISPLAYSURF.get_rect().width * 0.48,
                                                          80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Kim Gordon", 1, (255, 255, 255)),
+                DISPLAYSURF.blit(self.answerFont.render(answers[2], 1, (255, 255, 255)),
                                  (10, DISPLAYSURF.get_rect().centery * 1.30))
                 if pygame.mouse.get_pressed()[0]:
                     selectedNo = 3
@@ -116,14 +116,14 @@ class Question(object):
                                         rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.30,
                                                          DISPLAYSURF.get_rect().width * 0.48,
                                                          80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Kim Gordon", 1, (255, 255, 255)),
+                DISPLAYSURF.blit(self.answerFont.render(answers[2], 1, (255, 255, 255)),
                                  (10, DISPLAYSURF.get_rect().centery * 1.30))
             if self.a4.collidepoint(pygame.mouse.get_pos()):
                 self.a4 = fill_gradient(DISPLAYSURF, color=(235, 64, 52), gradient=(158, 27, 17),
                                         rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5,
                                                          DISPLAYSURF.get_rect().centery * 1.30,
                                                          DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Wendy Carlos", 1, (255, 255, 255)),
+                DISPLAYSURF.blit(self.answerFont.render(answers[3], 1, (255, 255, 255)),
                                  (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.30))
                 if pygame.mouse.get_pressed()[0]:
                     selectedNo = 4
@@ -133,7 +133,7 @@ class Question(object):
                                         rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5,
                                                          DISPLAYSURF.get_rect().centery * 1.30,
                                                          DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Wendy Carlos", 1, (255, 255, 255)),
+                DISPLAYSURF.blit(self.answerFont.render(answers[3], 1, (255, 255, 255)),
                                  (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.30))
             pygame.event.pump()
             pygame.display.update()
@@ -210,16 +210,37 @@ def attack(fromCharacter,toCharacter):
 
    # menu.main()
 def attack(fromCharacter,toCharacter):
+    keys=list(Questions.keys())
+    shuffle(keys)
+    key=keys[0]
+    tuple=Questions[key]
     #menu.main()
     if not fromCharacter.has_attacked:
-        toCharacter.takeHit(fromCharacter.giveHit())
-        if not toCharacter.isAlive:
-            if toCharacter in listENEMIES:
-                listENEMIES.remove(toCharacter)
+        if turn=='Green':
+            if Question(key, tuple[0], tuple[1]).isCorrect:
+                drawCharacters()
+                pygame.display.update()
+                toCharacter.takeHit(fromCharacter.giveHit())
+                if not toCharacter.isAlive:
+                    if toCharacter in listENEMIES:
+                        listENEMIES.remove(toCharacter)
+                    else:
+                        listPLAYERS.remove(toCharacter)
             else:
-                listPLAYERS.remove(toCharacter)
-        drawCharacters()
-        pygame.display.update()
+                drawCharacters()
+                pygame.display.update()
+                fromCharacter.giveHit()
+                drawCharacters()
+                pygame.display.update()
+        else:
+            toCharacter.takeHit(fromCharacter.giveHit())
+            if not toCharacter.isAlive:
+                if toCharacter in listENEMIES:
+                    listENEMIES.remove(toCharacter)
+                else:
+                    listPLAYERS.remove(toCharacter)
+            drawCharacters()
+            pygame.display.update()
 
     else:
         print("This character can't attack twice!")
@@ -573,8 +594,8 @@ while True:
                     textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
                     DISPLAYSURF.blit(text, textpos)
 
-                    correctAnswer=Question('When was the first dot com domain registered?', ['1993', '1995', '1988', '1985'], 1).isCorrect
-                    print(correctAnswer)
+
+
                   #  DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
                     pygame.display.update()
                     time.sleep(.5)
