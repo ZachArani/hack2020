@@ -3,11 +3,15 @@ from pygame.locals import *
 from time import *
 from SacaeMap import *
 from Player import *
+import time
+import os
+
 
 from operator import itemgetter
 import time
 from random import shuffle
 
+current_path = os.path.dirname(__file__)
 
 def RescaleImage(image):
     return pygame.transform.scale(image, (TILESIZE, TILESIZE))
@@ -86,28 +90,28 @@ turn='Green'
 phase='Move'
 
 # Initialize Players and Positions
-Lord = Player('Lord', 'CharacterSprites/lyn.png', [10, 9], 'Green')
-Mage = Player('Mage', 'CharacterSprites/mage.png', [9, 9], 'Green')
-Archer = Player('Archer', 'CharacterSprites/archer.png', [8, 9], 'Green')
-Bard = Player('Bard', 'CharacterSprites/bard.png', [7, 9], 'Green')
-listPLAYERS = [Lord, Mage, Archer, Bard]
+Asparagus = Player('Asparagus', os.path.join(current_path,'CharacterSprites/asparagus.png'), [10, 9], 'Green')
+Kohlrabi = Player('Broccoli', os.path.join(current_path,'CharacterSprites/kohlrabi.png'), [9, 9], 'Green')
+Sugarcane = Player('Archer', os.path.join(current_path,'CharacterSprites/sugarcane.png'), [8, 9], 'Green')
+listPLAYERS = [Asparagus, Kohlrabi, Sugarcane]
 
-Red1 = Player('Mage1', 'CharacterSprites/red_mage.png', [0, 1], 'Red')
-Red2 = Player('Mage2', 'CharacterSprites/red_mage.png', [5, 3], 'Red')
-Red3 = Player('Mage3', 'CharacterSprites/red_mage.png', [9, 6], 'Red')
-listENEMIES = [Red1, Red2, Red3]
 
-playerAttack = pygame.transform.scale(pygame.image.load('CharacterSprites/play_attack.png'),(5*TILESIZE, 2*TILESIZE))
-opponentMove = pygame.transform.scale(pygame.image.load('CharacterSprites/opp_move.png'), (5*TILESIZE, 2*TILESIZE))
+Broccoli = Player('Broccoli', os.path.join(current_path,'CharacterSprites/broccoli.png'), [0, 1], 'Red')
+Cinnamon = Player('Cinnamon', os.path.join(current_path,'CharacterSprites/cinnamon.png'), [2, 1], 'Red')
+Wasabi = Player('Wasabi', os.path.join(current_path,'CharacterSprites/wasabi.png'), [9, 8], 'Red')
+listENEMIES = [Broccoli, Cinnamon, Wasabi]
+
+
+playerAttack = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/play_attack.png')),(5*TILESIZE, 2*TILESIZE))
+opponentMove = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/opp_move.png')), (5*TILESIZE, 2*TILESIZE))
 
 walk_delay = 1
 walk_cd = 0
 
 HOTKEYS = {
-    1: Lord,
-    2: Mage,
-    3: Archer,
-    4: Bard
+    1: Asparagus,
+    2: Kohlrabi,
+    3: Sugarcane
 }
 
 # First player is default
@@ -119,7 +123,7 @@ clock = pygame.time.Clock()
 facing = listPLAYERS[0].facing
 
 # Initialize Cursor to load on Default Character
-Cursor = pygame.image.load('CharacterSprites/cursor.png')
+Cursor = pygame.image.load(os.path.join(current_path,'CharacterSprites/cursor.png'))
 cursorPos = PLAYER.position
 
 # Set up the Display
