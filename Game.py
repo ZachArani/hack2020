@@ -6,6 +6,7 @@ from Player import *
 import time
 import os
 import pygameMenu
+import questionMenu as menu
 
 
 from operator import itemgetter
@@ -20,7 +21,10 @@ def RescaleImage(image):
 def gridDistance(pos1, pos2):
     return abs(pos1[0]-pos2[0])+abs(pos1[1]-pos2[1])
 
+def donothing():
+    x=2
 def attack(fromCharacter,toCharacter):
+    menu.main()
     if not fromCharacter.has_attacked:
         toCharacter.takeHit(fromCharacter.giveHit())
         if not toCharacter.isAlive:
