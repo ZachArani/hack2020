@@ -3,9 +3,11 @@ from pygame.locals import *
 from time import *
 from SacaeMap import *
 from Player import *
+
 from operator import itemgetter
 import time
 from random import shuffle
+
 
 def RescaleImage(image):
     return pygame.transform.scale(image, (TILESIZE, TILESIZE))
@@ -94,6 +96,9 @@ Red1 = Player('Mage1', 'CharacterSprites/red_mage.png', [0, 1], 'Red')
 Red2 = Player('Mage2', 'CharacterSprites/red_mage.png', [5, 3], 'Red')
 Red3 = Player('Mage3', 'CharacterSprites/red_mage.png', [9, 6], 'Red')
 listENEMIES = [Red1, Red2, Red3]
+
+playerAttack = pygame.transform.scale(pygame.image.load('CharacterSprites/play_attack.png'),(5*TILESIZE, 2*TILESIZE))
+opponentMove = pygame.transform.scale(pygame.image.load('CharacterSprites/opp_move.png'), (5*TILESIZE, 2*TILESIZE))
 
 walk_delay = 1
 walk_cd = 0
@@ -332,6 +337,9 @@ while True:
                         break
                 if allDone:
                     phase = 'Attack'
+                    DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
+                    pygame.display.update()
+                    time.sleep(2)
                     for player in listPLAYERS:
                         player.start_turn()
 
@@ -361,6 +369,9 @@ while True:
             if allDone or not canAttack:
                 phase = 'Move'
                 turn= 'Red'
+                DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
+                pygame.display.update()
+                time.sleep(2)
                 for player in listPLAYERS:
                     player.start_turn()
 
@@ -374,32 +385,50 @@ while True:
         DISPLAYSURF.blit(RescaleImage(player.sprite), (player.position[0] * TILESIZE, player.position[1] * TILESIZE))
     DISPLAYSURF.blit(RescaleImage(Cursor), (cursorPos[0] * TILESIZE, cursorPos[1] * TILESIZE))
 
-    # Display DEBUG Information
+    # Display Tooltip Information
     if DEBUG:
         pygame.draw.rect(DISPLAYSURF,(0,0,0),pygame.Rect(0,MAPHEIGHT * TILESIZE,nextWidth,nextHeight-MAPHEIGHT * TILESIZE))
 
         placePosition = 5
-        Text_Char_Pos = INVFONT.render('Character Position: {}'.format(PLAYER.position) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Char_Pos, (placePosition, MAPHEIGHT * TILESIZE))
 
-        mouse_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
-        Text_Mouse_Pos = INVFONT.render('Cursor Position: ' + str(mouse_coord) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Mouse_Pos, (placePosition, MAPHEIGHT * TILESIZE + 15))
+        # Selected Character
+        DISPLAYSURF.blit(RescaleImage(PLAYER.sprite), (placePosition, MAPHEIGHT * TILESIZE))
+        Text_Name_Coords = INVFONT.render(
+            'Name: ' + str(PLAYER.name) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE))
+        Text_Health_Coords = INVFONT.render(
+            'Health: ' + str(PLAYER.health) + '/' + str(PLAYER.max_health) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 15))
+        Text_Move_Coords = INVFONT.render(
+            'Moves: ' + str(PLAYER.moves_left) + '/' + str(PLAYER.max_moves) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 30))
+        Text_Range_Coords = INVFONT.render(
+            'Range: ' + str(PLAYER.range) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 45))
+        Text_Damage_Coords = INVFONT.render(
+            'Damage: ' + str(PLAYER.damage) + '  ', True, WHITE, BLACK)
+        DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 60))
 
-        Text_Button_Facing = INVFONT.render('Direction Facing: ' + str(PLAYER.facing) + 9 * '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Button_Facing, (placePosition, MAPHEIGHT * TILESIZE + 30))
-
-        Text_New_Coords = INVFONT.render('Desired Coordinates: ' + str(new_coord) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_New_Coords, (placePosition, MAPHEIGHT * TILESIZE + 45))
-
+        # Moused over character
         new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
-        health='N/A'
-        for character in listENEMIES+listPLAYERS:
-            if new_coord == character.position:
-                health=str(character.health)+'/'+str(character.max_health)
-        #print(health)
-        Health_Coords = INVFONT.render('Highlighted Character\'s Health: ' + health+ '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Health_Coords, (placePosition, MAPHEIGHT * TILESIZE + 60))
+        for player in listPLAYERS + listENEMIES:
+            if new_coord == player.position:
+                DISPLAYSURF.blit(RescaleImage(player.sprite), (placePosition + 275, MAPHEIGHT * TILESIZE))
+                Text_Name_Coords = INVFONT.render(
+                    'Name: ' + str(player.name) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE))
+                Text_Health_Coords = INVFONT.render('Health: ' + str(player.health) + '/' + str(player.max_health) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 15))
+                Text_Move_Coords = INVFONT.render('Moves: ' + str(player.moves_left) + '/' + str(player.max_moves) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 30))
+                Text_Range_Coords = INVFONT.render(
+                    'Range: ' + str(player.range) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 45))
+                Text_Damage_Coords = INVFONT.render(
+                    'Damage: ' + str(player.damage) + '  ', True, WHITE, BLACK)
+                DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 60))
+
+
 
         error_cases = {
             1: 'OUT OF BOUNDS',
@@ -410,25 +439,21 @@ while True:
         Text_Valid = INVFONT.render(1000 * ' ', True, BLACK, BLACK)
         if case != 0:
             Text_Valid = INVFONT.render('INVALID COMMAND: {}'.format(error_cases[case]) + 10 * '   ', True, RED, BLACK)
-        DISPLAYSURF.blit(Text_Valid, (placePosition, MAPHEIGHT * TILESIZE + 60))
+        DISPLAYSURF.blit(Text_Valid, (placePosition, MAPHEIGHT * TILESIZE + 90))
 
-        Text_Char_Selected = INVFONT.render('Currently Selected: ' + PLAYER.name + '        ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Char_Selected, (placePosition, MAPHEIGHT * TILESIZE + 75))
+        # Text_Char_Selected = INVFONT.render('Currently Selected: ' + PLAYER.name + '        ', True, WHITE, BLACK)
+        # DISPLAYSURF.blit(Text_Char_Selected, (placePosition, MAPHEIGHT * TILESIZE + 75))
 
-        Text_Hotkey1 = INVFONT.render('1 : {}'.format(HOTKEYS[1].name) + 5 * '  ', True, WHITE, BLACK)
-        Text_Hotkey2 = INVFONT.render('2 : {}'.format(HOTKEYS[2].name) + 5 * '  ', True, WHITE, BLACK)
-        Text_Hotkey3 = INVFONT.render('3 : {}'.format(HOTKEYS[3].name) + 5 * '  ', True, WHITE, BLACK)
-        Text_Hotkey4 = INVFONT.render('4 : {}'.format(HOTKEYS[4].name) + 5 * '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Hotkey1, (placePosition + 200, MAPHEIGHT * TILESIZE))
-        DISPLAYSURF.blit(Text_Hotkey2, (placePosition + 200, MAPHEIGHT * TILESIZE + 15))
-        DISPLAYSURF.blit(Text_Hotkey3, (placePosition + 200, MAPHEIGHT * TILESIZE + 30))
-        DISPLAYSURF.blit(Text_Hotkey4, (placePosition + 200, MAPHEIGHT * TILESIZE + 45))
+        # Text_Hotkey1 = INVFONT.render('1 : {}'.format(HOTKEYS[1].name) + 5 * '  ', True, WHITE, BLACK)
+        # Text_Hotkey2 = INVFONT.render('2 : {}'.format(HOTKEYS[2].name) + 5 * '  ', True, WHITE, BLACK)
+        # Text_Hotkey3 = INVFONT.render('3 : {}'.format(HOTKEYS[3].name) + 5 * '  ', True, WHITE, BLACK)
+        # Text_Hotkey4 = INVFONT.render('4 : {}'.format(HOTKEYS[4].name) + 5 * '  ', True, WHITE, BLACK)
+        # DISPLAYSURF.blit(Text_Hotkey1, (placePosition + 200, MAPHEIGHT * TILESIZE))
+        # DISPLAYSURF.blit(Text_Hotkey2, (placePosition + 200, MAPHEIGHT * TILESIZE + 15))
+        # DISPLAYSURF.blit(Text_Hotkey3, (placePosition + 200, MAPHEIGHT * TILESIZE + 30))
+        # DISPLAYSURF.blit(Text_Hotkey4, (placePosition + 200, MAPHEIGHT * TILESIZE + 45))
 
         #		Text_Walk_Cooldown = INVFONT.render('Current Char CD: ' + str(PLAYER.move_current_cd) + (20*' '), True, WHITE, BLACK)
         #		DISPLAYSURF.blit(Text_Walk_Cooldown,(placePosition + 175, MAPHEIGHT*TILESIZE))
-
-        current_terrain = terrains[tilemap[PLAYER.position[1]][PLAYER.position[0]]]
-        Text_Terrain = INVFONT.render('Terrain: ' + str(current_terrain) + (9 * '  '), True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Terrain, (placePosition, MAPHEIGHT * TILESIZE + 90))
 
     pygame.display.update()
