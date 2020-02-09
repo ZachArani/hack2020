@@ -2,6 +2,9 @@
 
 # Declare characters used by this game. The color argument colorizes the
 # name of the character.
+init python:
+    renpy.music.register_channel("lecture", tight=False)
+
 
 define a = Character("Asparaguy")
 define c = Character("Cinnamon")
@@ -57,7 +60,7 @@ label start:
 
     scene black
 
-    s "{i}(Another day of class. It's been a rough week, but I've made it through. It's nearly the weekend, and best of all -- no tests today!){/i}"
+    a "{i}(Another day of class. It's been a rough week, but I've made it through. It's nearly the weekend, and best of all -- no tests today!){/i}"
 
     scene classroom
 
@@ -91,15 +94,15 @@ label start:
 
     show char cinnamon
 
-    s "{i}(Cinnamon is one of the three people in this class that I don't like. She's always found every way possible to single me out and pick on me, but I like to think that she doesn't get to me.){/i}"
+    a "{i}(Cinnamon is one of the three people in this class that I don't like. She's always found every way possible to single me out and pick on me, but I like to think that she doesn't get to me.){/i}"
 
     show char broccoli
 
-    s "{i}(Broccoli is one of her minions. He's never really put much effort into anything, including hating me, but he still isn't very nice.){/i}"
+    a "{i}(Broccoli is one of her minions. He's never really put much effort into anything, including hating me, but he still isn't very nice.){/i}"
 
     show char wasabi
 
-    s "{i}(And then there's Wasabi. Where Cinnamon sometimes vomits words, Wasabi is the polar opposite. His insults are sparse, calculating, and cut to the core.){/i}"
+    a "{i}(And then there's Wasabi. Where Cinnamon sometimes vomits words, Wasabi is the polar opposite. His insults are sparse, calculating, and cut to the core.){/i}"
 
     scene classroom
 
@@ -142,6 +145,8 @@ label start:
 
     t "Hm... I see. Well, in any case, today we will be reviewing some of the more pertinent aspects of the Computer History curriculum. We’re going back to the origin of computer history...even before {i}my time.{/i}"
 
+    play lecture lecturetimeintro
+    play lecture lecturetimeloop loop
     show text "{=lecture}LECTURE BEGIN{/=lecture}" at truecenter
     with dissolve
     pause 1
@@ -197,8 +202,77 @@ label start:
 
     t "These GUIs made computing easier to visualize for the inexperienced and became a staple for systems that followed. The computer had a direct impact on Steve Jobs and inspired the creation of Apple’s Macintosh computer as well as Microsoft Windows."
 
-    t ""
+    t "The mid 19th century truly laid the foundation for modern computing, although some further milestones were reached in the 1980s and 90s."
+
+    t "Tim Berners-Lee created the World Wide Web and the Hypertext Markup Language, or HTML, in 1990 while studying at CERN. Although the internet existed before Berners-Lee’s invention, the internet we know today is built upon his work."
+
+    t "The computer manufacturer Silicon Graphics amazed the general public with the SGI indigo in 1991. These computer workstations brought pre-rendered computer graphics to the big screen with popular films like Terminator 2 and Jurassic Park."
+
+    t "The company’s advancements in graphical computing ushered in a new era of arts and entertainment. Their technology later powered computer video game systems like the Nintendo 64."
+
+    t "1991 also brought Sun Microsystem’s Java programming language to the forefront of the computer world."
+
+    t "Although object oriented programming was created decades earlier, Java popularized the object oriented philosophy using its portable and robust programming language which is still used on billions of devices today."
+
+    t "After all of these advances, computers took towards the future of intelligence. IBM’s Deep Blue was the first true milestone in the field of AI. The supercomputer became the first AI to beat a chess Grandmaster in 1996."
+
+    t "After the loss, Grandmaster Kasparov noted that he saw deep creativity in the AI’s moves, signifying the start of a new era in computing…"
+
+    scene classroom
+
+    show char bamboo
+
+    t "Well kids, that’s all for today. Or at least, all I can remember. I’m starting to get as old as ARTHUR, an operating system made in 1987!"
+
+    show char broccoli
+
+    b "Wow. Veeeery interesting."
+
+    show char sugarcane
+
+    s "Oh, shush. That was perfectly fine! And I'm sure you feel better now that you've had your memory refreshed, right, Asparaguy?"
+
+    show char cinnamon
+
+    c "I'd sure hope so. It would be just heartbreaking to see you fail yet {i}another{/i} test."
+
+    a "I-- you--"
+
+    show char bamboo
+
+    t "Quiet down, young'uns! Back in my day, we actually had attention spans... I've got something new for you this week."
+
+    t "We'll be playing a game I like to call Quiz Ball. You've played dodgeball before, I assume. It's much like that, but you answer quiz questions from today's lecture to eliminate members from other teams. The last team standing gets an A!"
+
+    show char cinnamon
+
+    c "Spicy! I call Wasabi and Kohlrabi on my team!"
+
+    show char kohlrabi
+
+    k "I'd rather not."
+
+    show char cinnamon
+
+    c "What? Lame. I guess I'll have to make do with Broccoli, then."
+
+    show char broccoli
+
+    b "Whatever."
+
+    a "Well, that means you two are with me, Kohl and Sugar! Let's do our best!"
+
+    show char sugarcane
+
+    s "Yeah!"
+
+    show char bamboo
+
+    t "Off to the gym, then!"
 
     # This ends the game.
+    python:
+        import os
+        os.system("python3 /Users/shymain/Documents/Programming/hacklahoma20/Game.py")
 
     return

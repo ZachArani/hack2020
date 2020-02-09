@@ -1,40 +1,28 @@
 ﻿I'm sorry, but an uncaught exception occurred.
 
-After initialization, but before game start.
-  File "renpy/common/00start.rpy", line 82, in _init_language
-    renpy.change_language(language)
-  File "game/script.rpy", line 17, in <module>
-    
-NameError: name 'green' is not defined
+While running game code:
+  File "game/script.rpy", line 145, in script
+    $ renpy.music.register_channel("lecture", tight=False)
+  File "game/script.rpy", line 145, in <module>
+    $ renpy.music.register_channel("lecture", tight=False)
+Exception: Can't register channel outside of init phase.
 
 -- Full Traceback ------------------------------------------------------------
 
 Full traceback:
-  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/bootstrap.py", line 316, in bootstrap
-    renpy.main.main()
-  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/main.py", line 578, in main
-    run(restart)
-  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/main.py", line 75, in run
-    renpy.translation.init_translation()
-  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/translation/__init__.py", line 558, in init_translation
-    renpy.store._init_language()  # @UndefinedVariable
-  File "renpy/common/00start.rpy", line 82, in _init_language
-    renpy.change_language(language)
-  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/translation/__init__.py", line 638, in change_language
-    new_change_language(tl, language)
-  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/translation/__init__.py", line 604, in new_change_language
-    i.apply()
-  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/ast.py", line 2553, in apply
-    value = renpy.python.py_eval(expr)
-  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/python.py", line 2059, in py_eval
-    return py_eval_bytecode(code, globals, locals)
-  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/python.py", line 2052, in py_eval_bytecode
-    return eval(bytecode, globals, locals)
-  File "game/script.rpy", line 17, in <module>
-    
-NameError: name 'green' is not defined
+  File "game/script.rpy", line 145, in script
+    $ renpy.music.register_channel("lecture", tight=False)
+  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/ast.py", line 914, in execute
+    renpy.python.py_exec_bytecode(self.code.bytecode, self.hide, store=self.store)
+  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/python.py", line 2028, in py_exec_bytecode
+    exec bytecode in globals, locals
+  File "game/script.rpy", line 145, in <module>
+    $ renpy.music.register_channel("lecture", tight=False)
+  File "/Users/shymain/Documents/renpy-7.3.5-sdk/renpy/audio/audio.py", line 757, in register_channel
+    raise Exception("Can't register channel outside of init phase.")
+Exception: Can't register channel outside of init phase.
 
 Darwin-18.0.0-x86_64-i386-64bit
 Ren'Py 7.3.5.606
 STEM Tactics 1.0
-Sat Feb  8 18:56:59 2020
+Sun Feb  9 00:06:30 2020

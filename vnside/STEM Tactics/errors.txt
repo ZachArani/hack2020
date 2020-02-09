@@ -2,9 +2,9 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 19: style property outline is not known.
-    outline [(1, "000000", 0, 0)]
+File "game/script.rpy", line 5: expected ':' not found.
+    python init:
            ^
 
 Ren'Py Version: Ren'Py 7.3.5.606
-Sat Feb  8 19:01:19 2020
+Sun Feb  9 00:06:55 2020
