@@ -33,7 +33,8 @@ class Player:
 	def decrement_Moves(self,num):
 		self.moves_left -= num
 		if self.moves_left < 1:
-			self.sprite = pygame.image.load(os.path.join(current_path,'CharacterSprites/gray_mage.png'))
+			print(self.original_sprite[:-4]+"_gray.png")
+			self.sprite = pygame.image.load(os.path.join(current_path,self.original_sprite[:-4]+"_gray.png"))
 	def setPos(self,position):
 		self.position=position
 		return self
@@ -41,7 +42,7 @@ class Player:
 		self.sprite = pygame.image.load(self.original_sprite)
 	def giveHit(self):
 		self.has_attacked=True
-		self.sprite = pygame.image.load(os.path.join(current_path,'CharacterSprites/gray_mage.png'))
+		self.sprite = pygame.image.load(os.path.join(current_path,self.original_sprite[:-4]+"_gray.png"))
 		return self
 	def takeHit(self,attacker):
 		self.health -= attacker.damage
