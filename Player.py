@@ -18,7 +18,7 @@ class Player:
 
 		self.has_attacked=False
 		self.moves_left=3
-		self.max_moves=3
+		self.max_moves=max_moves
 
 		self.max_health=max_health
 		self.health=self.max_health
