@@ -15,6 +15,7 @@ from random import shuffle
 current_path = os.path.dirname(__file__)
 
 
+
 class Question(object):
     def __init__(self, question, answers, correctAnswer):
         self.questionFont = pygame.font.SysFont('FreeSerif', 35)
@@ -37,6 +38,11 @@ class Question(object):
         fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
                       rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5, DISPLAYSURF.get_rect().centery * 1.30,
                                        DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
+
+
+pygame.mixer.init()
+pygame.mixer.music.load(os.path.join(current_path, "Music/battletime.ogg"))
+pygame.mixer.music.play(-1);
 
 
 def RescaleImage(image):
@@ -102,6 +108,8 @@ def attack(fromCharacter,toCharacter):
     #testMenu = pygameMenu.Menu(surface=DISPLAYSURF, bgfun=test_background, font=pygameMenu.font.FONT_HELVETICA, font_color=(0, 0, 0), font_size=25, window_height=200, window_width=400, title="test")
 
    # menu.main()
+def attack(fromCharacter,toCharacter):
+    #menu.main()
     if not fromCharacter.has_attacked:
         toCharacter.takeHit(fromCharacter.giveHit())
         if not toCharacter.isAlive:
@@ -134,7 +142,7 @@ def scuffedDijkstra(fromCharacter, toCharacter):
 
     parent={}
     startPos = toCharacter.position
-    print(startPos)
+    #print(startPos)
     endPos=fromCharacter.position
 
     #set all to infinity
@@ -159,11 +167,9 @@ def scuffedDijkstra(fromCharacter, toCharacter):
         explored.append([minRow,minTile])
         incrementAdjacent(dist,minRow,minTile,parent,toCharacter,fromCharacter)
         if [minTile,minRow]==endPos:
-            for d in dist:
-                print(d)
+
             return [dist[minRow][minTile],parent]
-    for d in dist:
-        print (d)
+
     return -1,parent
 
 # Turn Debug mode on and off
@@ -178,15 +184,15 @@ turn='Green'
 phase='Move'
 
 # Initialize Players and Positions
-Asparagus = Player('Asparagus', os.path.join(current_path,'CharacterSprites/asparagus.png'), [10, 9], 'Green')
+Asparagus = Player('Asparaguy', os.path.join(current_path,'CharacterSprites/asparagus.png'), [10, 9], 'Green')
 Kohlrabi = Player('Kohlrabi', os.path.join(current_path,'CharacterSprites/kohlrabi.png'), [9, 9], 'Green')
 Sugarcane = Player('Sugarcane', os.path.join(current_path,'CharacterSprites/sugarcane.png'), [8, 9], 'Green')
 listPLAYERS = [Asparagus, Kohlrabi, Sugarcane]
 
 
-Broccoli = Player('Broccoli', os.path.join(current_path,'CharacterSprites/broccoli.png'), [0, 1], 'Red')
-Cinnamon = Player('Cinnamon', os.path.join(current_path,'CharacterSprites/cinnamon.png'), [2, 1], 'Red')
-Wasabi = Player('Wasabi', os.path.join(current_path,'CharacterSprites/wasabi.png'), [9, 8], 'Red')
+Broccoli = Player('Broccoli', os.path.join(current_path,'CharacterSprites/broccoli.png'), [2, 1], 'Red')
+Cinnamon = Player('Cinnamon', os.path.join(current_path,'CharacterSprites/cinnamon.png'), [9, 1], 'Red')
+Wasabi = Player('Wasabi', os.path.join(current_path,'CharacterSprites/wasabi.png'), [0, 1], 'Red',range=3)
 listENEMIES = [Broccoli, Cinnamon, Wasabi]
 
 
@@ -194,6 +200,9 @@ playerAttack = pygame.transform.scale(pygame.image.load(os.path.join(current_pat
 playerMove = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/play_move.png')),(5*TILESIZE, 2*TILESIZE))
 opponentMove = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/opp_move.png')), (5*TILESIZE, 2*TILESIZE))
 opponentAttack = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/opp_attack.png')), (5*TILESIZE, 2*TILESIZE))
+youWin = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/you_win.png')), (5*TILESIZE, 2*TILESIZE))
+youLose = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/you_lose.png')), (5*TILESIZE, 2*TILESIZE))
+
 
 walk_delay = 1
 walk_cd = 0
@@ -223,6 +232,7 @@ if DEBUG:
     INVFONT = pygame.font.SysFont('FreeSans.tff', 18)
     testFont = pygame.font.SysFont('FreeSerif', 45, italic=True)
     questionFont = pygame.font.SysFont('FreeSerif', 25)
+
 else:
     const = 0
 # Create display surface
@@ -232,7 +242,7 @@ nextHeight= MAPHEIGHT * TILESIZE + const
 
 
 def redTurn():
-    #Moves
+    #Move
     for enemy in listENEMIES:
         closest=None
         for player in listPLAYERS:
@@ -262,8 +272,7 @@ def redTurn():
     DISPLAYSURF.blit(text, textpos)
     #DISPLAYSURF.blit(opponentAttack, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
     pygame.display.update()
-    time.sleep(2)
-
+    time.sleep(.5)
     for enemy in listENEMIES:
         for player in listPLAYERS:
             if gridDistance(player.position,enemy.position)==1:
@@ -281,6 +290,11 @@ def redTurn():
     #DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
     pygame.display.update()
     time.sleep(2)
+    if len(listPLAYERS) != 0:
+        drawCharacters()
+        DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+        pygame.display.update()
+        time.sleep(.4)
 
         #if can_hit go to it
     #Attacks
@@ -297,13 +311,26 @@ def drawCharacters():
     for player in listPLAYERS + listENEMIES:
         DISPLAYSURF.blit(RescaleImage(player.sprite), (player.position[0] * TILESIZE, player.position[1] * TILESIZE))
 while True:
+
+    if len(listENEMIES) == 0:
+        DISPLAYSURF.blit(youWin, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+        pygame.display.update()
+        time.sleep(5)
+        break
+
+    elif len(listPLAYERS) == 0:
+        DISPLAYSURF.blit(youLose, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+        pygame.display.update()
+        time.sleep(5)
+        break
+
     if turn == 'Red':
         redTurn()
         turn ='Green'
         time.sleep(1)
         for enemy in listENEMIES:
             enemy.start_turn()
-    if not PLAYER in listPLAYERS:
+    if not PLAYER in listPLAYERS and len(listPLAYERS) != 0:
         PLAYER=listPLAYERS[0]
     TILESIZE = int(nextWidth / MAPWIDTH)
 
@@ -333,6 +360,7 @@ while True:
             pygame.quit()
             sys.exit()
 
+
         # Mouse inputs
 
 
@@ -346,23 +374,6 @@ while True:
                         PLAYER = player
 
             if (event.type == KEYDOWN):
-            # if (event.key == K_1):
-            #     PLAYER = HOTKEYS[1]
-            #     cursorPos = PLAYER.position
-            #     new_coord = cursorPos
-            # if (event.key == K_2):
-            #     PLAYER = HOTKEYS[2]
-            #     cursorPos = PLAYER.position
-            #     new_coord = cursorPos
-            # if (event.key == K_3):
-            #     PLAYER = HOTKEYS[3]
-            #     cursorPos = PLAYER.position
-            #     new_coord = cursorPos
-            # if (event.key == K_4):
-            #     PLAYER = HOTKEYS[4]
-            #     cursorPos = PLAYER.position
-            #     new_coord = cursorPos
-            # Keyboard Inputs
                 if (event.key == K_d and PLAYER.moves_left>0):
                     PLAYER.facing = 'RIGHT'
                     increment = 1
@@ -449,6 +460,8 @@ while True:
                         allDone=False
                         break
                 if allDone:
+                    drawCharacters()
+                    pygame.display.update()
                     phase = 'Attack'
 
 
@@ -469,7 +482,7 @@ while True:
                     Question('test')
                   #  DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
                     pygame.display.update()
-                    time.sleep(2)
+                    time.sleep(.5)
                     for player in listPLAYERS:
                         player.start_turn()
 
@@ -507,6 +520,10 @@ while True:
                 #DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
                 pygame.display.update()
                 time.sleep(2)
+                if len(listENEMIES) != 0:
+                    DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
+                    pygame.display.update()
+                    time.sleep(.5)
                 for player in listPLAYERS:
                     player.start_turn()
 
@@ -522,46 +539,64 @@ while True:
 
     # Display Tooltip Information
     if DEBUG:
-        pygame.draw.rect(DISPLAYSURF,(0,0,0),pygame.Rect(0,MAPHEIGHT * TILESIZE,nextWidth,nextHeight-MAPHEIGHT * TILESIZE))
+        paperDialog = pygame.transform.scale(pygame.image.load(os.path.join(current_path, 'Textures/paper_dialog.png')), (nextWidth, nextHeight - MAPHEIGHT * TILESIZE))
+        # pygame.draw.rect(DISPLAYSURF,(0,0,0),pygame.Rect(0,MAPHEIGHT * TILESIZE,nextWidth,nextHeight-MAPHEIGHT * TILESIZE))
+        DISPLAYSURF.blit(paperDialog, (0,MAPHEIGHT * TILESIZE))
 
         placePosition = 5
 
         # Selected Character
-        DISPLAYSURF.blit(RescaleImage(PLAYER.sprite), (placePosition, MAPHEIGHT * TILESIZE))
+        DISPLAYSURF.blit(RescaleImage(PLAYER.sprite), (placePosition, MAPHEIGHT * TILESIZE + 15))
         Text_Name_Coords = INVFONT.render(
-            'Name: ' + str(PLAYER.name) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE))
+            'Name: ' + str(PLAYER.name) + '  ', True, BLACK)
+        DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 15))
         Text_Health_Coords = INVFONT.render(
-            'Health: ' + str(PLAYER.health) + '/' + str(PLAYER.max_health) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 15))
+            'Health: ' + str(PLAYER.health) + '/' + str(PLAYER.max_health) + '  ', True, BLACK)
+        DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 30))
         Text_Move_Coords = INVFONT.render(
-            'Moves: ' + str(PLAYER.moves_left) + '/' + str(PLAYER.max_moves) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 30))
+            'Moves: ' + str(PLAYER.moves_left) + '/' + str(PLAYER.max_moves) + '  ', True, BLACK)
+        DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 45))
         Text_Range_Coords = INVFONT.render(
-            'Range: ' + str(PLAYER.range) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 45))
+            'Range: ' + str(PLAYER.range) + '  ', True, BLACK)
+        DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 60))
         Text_Damage_Coords = INVFONT.render(
-            'Damage: ' + str(PLAYER.damage) + '  ', True, WHITE, BLACK)
-        DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 60))
+            'Damage: ' + str(PLAYER.damage) + '  ', True, BLACK)
+        DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 75, MAPHEIGHT * TILESIZE + 75))
 
         # Moused over character
         new_coord = [int(pygame.mouse.get_pos()[0] / TILESIZE), int(pygame.mouse.get_pos()[1] / TILESIZE)]
         for player in listPLAYERS + listENEMIES:
             if new_coord == player.position:
-                DISPLAYSURF.blit(RescaleImage(player.sprite), (placePosition + 275, MAPHEIGHT * TILESIZE))
+                DISPLAYSURF.blit(RescaleImage(player.sprite), (placePosition + 275, MAPHEIGHT * TILESIZE + 15))
                 Text_Name_Coords = INVFONT.render(
-                    'Name: ' + str(player.name) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE))
-                Text_Health_Coords = INVFONT.render('Health: ' + str(player.health) + '/' + str(player.max_health) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 15))
-                Text_Move_Coords = INVFONT.render('Moves: ' + str(player.moves_left) + '/' + str(player.max_moves) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 30))
+                    'Name: ' + str(player.name) + '  ', True, BLACK)
+                DISPLAYSURF.blit(Text_Name_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 15))
+                Text_Health_Coords = INVFONT.render('Health: ' + str(player.health) + '/' + str(player.max_health) + '  ', True, BLACK)
+                DISPLAYSURF.blit(Text_Health_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 30))
+                Text_Move_Coords = INVFONT.render('Moves: ' + str(player.moves_left) + '/' + str(player.max_moves) + '  ', True, BLACK)
+                DISPLAYSURF.blit(Text_Move_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 45))
                 Text_Range_Coords = INVFONT.render(
-                    'Range: ' + str(player.range) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 45))
+                    'Range: ' + str(player.range) + '  ', True, BLACK)
+                DISPLAYSURF.blit(Text_Range_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 60))
                 Text_Damage_Coords = INVFONT.render(
-                    'Damage: ' + str(player.damage) + '  ', True, WHITE, BLACK)
-                DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 60))
+                    'Damage: ' + str(player.damage) + '  ', True, BLACK)
+                DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 75))
+
+                #Do blue stuff
+                blue_image = pygame.Surface((TILESIZE,TILESIZE))
+                blue_image.set_alpha(45)
+                blue_image.fill((0,0,180))
+                red_image = pygame.Surface((TILESIZE, TILESIZE))
+                red_image.set_alpha(45)
+                red_image.fill((180, 0, 0))
+                for row in range(MAPHEIGHT):
+                    for column in range(MAPWIDTH):
+                        if gridDistance(player.position, [column,row])<= player.moves_left:
+                            DISPLAYSURF.blit(blue_image,
+                                         (column * TILESIZE, row * TILESIZE))
+                        elif gridDistance(player.position, [column,row])<= player.moves_left+player.range:
+                            DISPLAYSURF.blit(red_image,
+                                         (column * TILESIZE, row * TILESIZE))
 
 
 
@@ -571,9 +606,8 @@ while True:
             3: 'CHARACTER OCCUPYING TILE',
             4: 'MOVEMENT COOLDOWN'
         }
-        Text_Valid = INVFONT.render(1000 * ' ', True, BLACK, BLACK)
+        Text_Valid = INVFONT.render(1000 * ' ', True, BLACK)
         if case != 0:
             Text_Valid = INVFONT.render('INVALID COMMAND: {}'.format(error_cases[case]) + 10 * '   ', True, RED, BLACK)
-        DISPLAYSURF.blit(Text_Valid, (placePosition, MAPHEIGHT * TILESIZE + 90))
-
+        DISPLAYSURF.blit(Text_Valid, (placePosition, MAPHEIGHT * TILESIZE + 105))
     pygame.display.update()
