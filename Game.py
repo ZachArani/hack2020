@@ -106,7 +106,9 @@ listENEMIES = [Broccoli, Cinnamon, Wasabi]
 
 
 playerAttack = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/play_attack.png')),(5*TILESIZE, 2*TILESIZE))
+playerMove = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/play_move.png')),(5*TILESIZE, 2*TILESIZE))
 opponentMove = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/opp_move.png')), (5*TILESIZE, 2*TILESIZE))
+opponentAttack = pygame.transform.scale(pygame.image.load(os.path.join(current_path,'CharacterSprites/opp_attack.png')), (5*TILESIZE, 2*TILESIZE))
 
 walk_delay = 1
 walk_cd = 0
@@ -166,6 +168,11 @@ def redTurn():
                 drawCharacters()
                 pygame.display.update()
                 time.sleep(0.4)
+
+    DISPLAYSURF.blit(opponentAttack, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+    pygame.display.update()
+    time.sleep(2)
+
     for enemy in listENEMIES:
         for player in listPLAYERS:
             if gridDistance(player.position,enemy.position)==1:
@@ -174,6 +181,9 @@ def redTurn():
                 drawCharacters()
                 pygame.display.update()
                 time.sleep(0.4)
+    DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+    pygame.display.update()
+    time.sleep(2)
 
         #if can_hit go to it
     #Attacks
@@ -186,9 +196,9 @@ def drawCharacters():
             DISPLAYSURF.blit(RescaleImage(textures[tilemap[row][column]]), (column * TILESIZE, row * TILESIZE))
 
     # Display players and cursor
+    DISPLAYSURF.blit(RescaleImage(Cursor), (cursorPos[0] * TILESIZE, cursorPos[1] * TILESIZE))
     for player in listPLAYERS + listENEMIES:
         DISPLAYSURF.blit(RescaleImage(player.sprite), (player.position[0] * TILESIZE, player.position[1] * TILESIZE))
-    DISPLAYSURF.blit(RescaleImage(Cursor), (cursorPos[0] * TILESIZE, cursorPos[1] * TILESIZE))
 while True:
     if turn == 'Red':
         redTurn()
@@ -199,8 +209,6 @@ while True:
     if not PLAYER in listPLAYERS:
         PLAYER=listPLAYERS[0]
     TILESIZE = int(nextWidth / MAPWIDTH)
-    #DISPLAYSURF = pygame.display.set_mode((MAPWIDTH * TILESIZE, MAPHEIGHT * TILESIZE + const), RESIZABLE)
-    #DISPLAYSURF.update()
 
     mouse_coord = [pygame.mouse.get_pos()[0] / TILESIZE, pygame.mouse.get_pos()[1] / TILESIZE]
     cursorPos = PLAYER.position
@@ -448,20 +456,5 @@ while True:
         if case != 0:
             Text_Valid = INVFONT.render('INVALID COMMAND: {}'.format(error_cases[case]) + 10 * '   ', True, RED, BLACK)
         DISPLAYSURF.blit(Text_Valid, (placePosition, MAPHEIGHT * TILESIZE + 90))
-
-        # Text_Char_Selected = INVFONT.render('Currently Selected: ' + PLAYER.name + '        ', True, WHITE, BLACK)
-        # DISPLAYSURF.blit(Text_Char_Selected, (placePosition, MAPHEIGHT * TILESIZE + 75))
-
-        # Text_Hotkey1 = INVFONT.render('1 : {}'.format(HOTKEYS[1].name) + 5 * '  ', True, WHITE, BLACK)
-        # Text_Hotkey2 = INVFONT.render('2 : {}'.format(HOTKEYS[2].name) + 5 * '  ', True, WHITE, BLACK)
-        # Text_Hotkey3 = INVFONT.render('3 : {}'.format(HOTKEYS[3].name) + 5 * '  ', True, WHITE, BLACK)
-        # Text_Hotkey4 = INVFONT.render('4 : {}'.format(HOTKEYS[4].name) + 5 * '  ', True, WHITE, BLACK)
-        # DISPLAYSURF.blit(Text_Hotkey1, (placePosition + 200, MAPHEIGHT * TILESIZE))
-        # DISPLAYSURF.blit(Text_Hotkey2, (placePosition + 200, MAPHEIGHT * TILESIZE + 15))
-        # DISPLAYSURF.blit(Text_Hotkey3, (placePosition + 200, MAPHEIGHT * TILESIZE + 30))
-        # DISPLAYSURF.blit(Text_Hotkey4, (placePosition + 200, MAPHEIGHT * TILESIZE + 45))
-
-        #		Text_Walk_Cooldown = INVFONT.render('Current Char CD: ' + str(PLAYER.move_current_cd) + (20*' '), True, WHITE, BLACK)
-        #		DISPLAYSURF.blit(Text_Walk_Cooldown,(placePosition + 175, MAPHEIGHT*TILESIZE))
 
     pygame.display.update()

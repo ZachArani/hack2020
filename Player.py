@@ -1,6 +1,9 @@
 import pygame, sys
 from pygame.locals import *
 from time import *
+import os
+
+current_path = os.path.dirname(__file__)
 
 class Player:
 
@@ -18,7 +21,7 @@ class Player:
 
 		self.has_attacked=False
 		self.moves_left=3
-		self.max_moves=3
+		self.max_moves=max_moves
 
 		self.max_health=max_health
 		self.health=self.max_health
@@ -30,7 +33,7 @@ class Player:
 	def decrement_Moves(self,num):
 		self.moves_left -= num
 		if self.moves_left < 1:
-			self.sprite = pygame.image.load('CharacterSprites/gray_mage.png')
+			self.sprite = pygame.image.load(os.path.join(current_path,'CharacterSprites/gray_mage.png'))
 	def setPos(self,position):
 		self.position=position
 		return self
@@ -38,7 +41,7 @@ class Player:
 		self.sprite = pygame.image.load(self.original_sprite)
 	def giveHit(self):
 		self.has_attacked=True
-		self.sprite = pygame.image.load('CharacterSprites/gray_mage.png')
+		self.sprite = pygame.image.load(os.path.join(current_path,'CharacterSprites/gray_mage.png'))
 		return self
 	def takeHit(self,attacker):
 		self.health -= attacker.damage
