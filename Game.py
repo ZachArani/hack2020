@@ -24,7 +24,7 @@ def gridDistance(pos1, pos2):
 def donothing():
     x=2
 def attack(fromCharacter,toCharacter):
-    menu.main()
+    #menu.main()
     if not fromCharacter.has_attacked:
         toCharacter.takeHit(fromCharacter.giveHit())
         if not toCharacter.isAlive:
@@ -57,7 +57,7 @@ def scuffedDijkstra(fromCharacter, toCharacter):
 
     parent={}
     startPos = toCharacter.position
-    print(startPos)
+    #print(startPos)
     endPos=fromCharacter.position
 
     #set all to infinity
@@ -82,11 +82,9 @@ def scuffedDijkstra(fromCharacter, toCharacter):
         explored.append([minRow,minTile])
         incrementAdjacent(dist,minRow,minTile,parent,toCharacter,fromCharacter)
         if [minTile,minRow]==endPos:
-            for d in dist:
-                print(d)
+
             return [dist[minRow][minTile],parent]
-    for d in dist:
-        print (d)
+
     return -1,parent
 
 # Turn Debug mode on and off
@@ -101,7 +99,7 @@ turn='Green'
 phase='Move'
 
 # Initialize Players and Positions
-Asparagus = Player('Asparagus', os.path.join(current_path,'CharacterSprites/asparagus.png'), [10, 9], 'Green')
+Asparagus = Player('Asparagus', os.path.join(current_path,'CharacterSprites/asparagus.png'), [10, 9], 'Green', range=2)
 Kohlrabi = Player('Kohlrabi', os.path.join(current_path,'CharacterSprites/kohlrabi.png'), [9, 9], 'Green')
 Sugarcane = Player('Sugarcane', os.path.join(current_path,'CharacterSprites/sugarcane.png'), [8, 9], 'Green')
 listPLAYERS = [Asparagus, Kohlrabi, Sugarcane]
@@ -452,6 +450,22 @@ while True:
                 Text_Damage_Coords = INVFONT.render(
                     'Damage: ' + str(player.damage) + '  ', True, WHITE, BLACK)
                 DISPLAYSURF.blit(Text_Damage_Coords, (placePosition + 350, MAPHEIGHT * TILESIZE + 60))
+
+                #Do blue stuff
+                blue_image = pygame.Surface((TILESIZE,TILESIZE))
+                blue_image.set_alpha(45)
+                blue_image.fill((0,0,180))
+                red_image = pygame.Surface((TILESIZE, TILESIZE))
+                red_image.set_alpha(45)
+                red_image.fill((180, 0, 0))
+                for row in range(MAPHEIGHT):
+                    for column in range(MAPWIDTH):
+                        if gridDistance(player.position, [column,row])<= player.max_moves:
+                            DISPLAYSURF.blit(blue_image,
+                                         (column * TILESIZE, row * TILESIZE))
+                        elif gridDistance(player.position, [column,row])<= player.max_moves+player.range:
+                            DISPLAYSURF.blit(red_image,
+                                         (column * TILESIZE, row * TILESIZE))
 
 
 
