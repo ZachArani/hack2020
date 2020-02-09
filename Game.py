@@ -44,8 +44,8 @@ Red2 = Player('Mage2', 'CharacterSprites/red_mage.png', [5, 3], 'Red')
 Red3 = Player('Mage3', 'CharacterSprites/red_mage.png', [9, 8], 'Red')
 listENEMIES = [Red1, Red2, Red3]
 
-playerAttack = pygame.image.load('CharacterSprites/play_attack.png')
-opponentMove = pygame.image.load('CharacterSprites/opp_move.png')
+playerAttack = pygame.transform.scale(pygame.image.load('CharacterSprites/play_attack.png'),(5*TILESIZE, 2*TILESIZE))
+opponentMove = pygame.transform.scale(pygame.image.load('CharacterSprites/opp_move.png'), (5*TILESIZE, 2*TILESIZE))
 
 walk_delay = 1
 walk_cd = 0
@@ -230,9 +230,7 @@ while True:
                         break
                 if allDone:
                     phase = 'Attack'
-                    large_font = pygame.font.SysFont('FreeSans.tff', 60)
-                    Text_Player_Attack = large_font.render('Player Attack Phase', True, RED)
-                    DISPLAYSURF.blit(Text_Player_Attack, (nextWidth/2 - 200, nextHeight/2 - const))
+                    DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
                     pygame.display.update()
                     time.sleep(2)
                     for player in listPLAYERS:
@@ -264,9 +262,7 @@ while True:
             if allDone or not canAttack:
                 phase = 'Move'
                 turn= 'Red'
-                large_font = pygame.font.SysFont('FreeSans.tff', 60)
-                Text_Opponent_Move = large_font.render('Opponent Move Phase', True, RED)
-                DISPLAYSURF.blit(Text_Opponent_Move, (nextWidth / 2 - 200, nextHeight / 2 - const))
+                DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
                 pygame.display.update()
                 time.sleep(2)
                 for player in listPLAYERS:
