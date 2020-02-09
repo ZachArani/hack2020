@@ -20,4 +20,4 @@ Questions = {
     'What was the name of the AI who beat Grandmasters in chess?': [['ChessMind','Open King','Deep Blue','Master AI'],3]
 }
 
-pickle.dump(Questions, open('q.p','wb'))
+pickle.dump(Questions, open('questions.pckl','wb'))

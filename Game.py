@@ -8,142 +8,16 @@ import os
 import pygameMenu
 import questionMenu as menu
 
+
 from operator import itemgetter
 import time
 from random import shuffle
 
 current_path = os.path.dirname(__file__)
 
-Questions = {
-    'Who is the mother of programming?': [['Ada Lovelace','Grace Hopper','Kim Gordon','Wendy Carlos'],1],
-    'Who created the Analytical Engine?': [['Alan Turing','Charles Babbage','Steve Jobs','Ada Lovelace'],2],
-    'What was the name of the first digital computer?': [['ABC','ENIVAC','UNIVAC','Indigo'],1],
-    'Who came up with the idea of a machine that could compute anything which is computable?': [['Charles Babbage','Ada Lovelace','Alan Turing','Albert Einstein'],1],
-    'What is the lowest level programming language?': [['Assembly','C','Java','FORTRAN'],1],
-    'What was the first commercial computer?': [['ABC','ENIVAC','Xerox Alto', 'UNIVAC'], 4],
-    'Who developed the concept of Machine Independent Programming?': [['Grace Hopper','Ada Lovelace','Dennis Ritiche','Alan Turing'],1],
-    'When was the internet created?': [['1960s','1970s','1980s','1990s'], 1],
-    'Who created the computer chip and was awarded with a Nobel Prize in Physics?': [['Alan Turing','Bill Gates','Jack Kilby','Ken Thompson'],3],
-    'Where was UNIX developed?': [['Bell Laboratories','Xerox Laboratories','BBC Laboratories','Microsoft'],1],
-    'What was the first portable computer?': [['IBM 5100','Osborne 1','IBN 5100','Macintosh'],1],
-    'Who created the C programming language?': [['Ken Thompson','Grace Hopper','Dennis Ritchie','Steve Jobs'], 3],
-    'What company created the first Object Oriented Programming language?': [['Apple,','Bell','Sun Microsystems', 'Xerox'], 4],
-    'First personal computer with a graphical user interface?': [['Xerox Alto','Macintosh','IBN 5100','Indigo'], 1],
-    'When was the first dot com domain registered?': [['1993','1995','1988', '1985'], 4],
-    'What was the name of the AI who beat Grandmasters in chess?': [['ChessMind','Open King','Deep Blue','Master AI'],3]
-}
-
-
-
-class Question(object):
-    def __init__(self, question, answers, correctAnswer):
-        selected = False
-        selectedNo = 0
-        self.questionFont = pygame.font.SysFont('FreeSerif', 35)
-        self.answerFont = pygame.font.SysFont('FreeSerif', 25)
-        self.question = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
-                      rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 0.85, DISPLAYSURF.get_rect().width - 12,
-                                       100), forward=False)
-        DISPLAYSURF.blit(self.questionFont.render(question, 1, (255, 255, 255)), (10, DISPLAYSURF.get_rect().centery * 0.85))
-
-        self.a1 = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
-                      rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.10, DISPLAYSURF.get_rect().width * 0.48,
-                                       80), forward=False)
-        DISPLAYSURF.blit(self.answerFont.render(answers[0], 1, (255, 255, 255)), (10, DISPLAYSURF.get_rect().centery * 1.10))
-
-        self.a2 = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
-                      rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5, DISPLAYSURF.get_rect().centery * 1.10,
-                                       DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-        DISPLAYSURF.blit(self.answerFont.render(answers[1], 1, (255, 255, 255)), (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.10))
-
-
-        self.a3 = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
-                      rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.30, DISPLAYSURF.get_rect().width * 0.48,
-                                       80), forward=False)
-        DISPLAYSURF.blit(self.answerFont.render(answers[2], 1, (255, 255, 255)), (10, DISPLAYSURF.get_rect().centery * 1.30))
-
-        self.a4 = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
-                      rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5, DISPLAYSURF.get_rect().centery * 1.30,
-                                       DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-        DISPLAYSURF.blit(self.answerFont.render(answers[3], 1, (255, 255, 255)), (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.30))
-        while not selected:
-            if self.a1.collidepoint(pygame.mouse.get_pos()):
-                self.a1 = fill_gradient(DISPLAYSURF, color=(235, 64, 52), gradient=(158, 27, 17),
-                                        rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.10,
-                                                         DISPLAYSURF.get_rect().width * 0.48,
-                                                         80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Ada Lovelace", 1, (255, 255, 255)),
-                                 (10, DISPLAYSURF.get_rect().centery * 1.10))
-                if pygame.mouse.get_pressed()[0]:
-                    selectedNo = 1
-                    selected = True
-            else:
-                self.a1 = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
-                                        rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.10,
-                                                         DISPLAYSURF.get_rect().width * 0.48,
-                                                         80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Ada Lovelace", 1, (255, 255, 255)),
-                                 (10, DISPLAYSURF.get_rect().centery * 1.10))
-            if self.a2.collidepoint(pygame.mouse.get_pos()):
-                self.a2 = fill_gradient(DISPLAYSURF, color=(235, 64, 52), gradient=(158, 27, 17),
-                                        rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5,
-                                                         DISPLAYSURF.get_rect().centery * 1.10,
-                                                         DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Grace Hopper", 1, (255, 255, 255)),
-                                 (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.10))
-                if pygame.mouse.get_pressed()[0]:
-                    selectedNo = 2
-                    selected = True
-            else:
-                self.a2 = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
-                                        rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5,
-                                                         DISPLAYSURF.get_rect().centery * 1.10,
-                                                         DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Grace Hopper", 1, (255, 255, 255)),
-                                 (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.10))
-            if self.a3.collidepoint(pygame.mouse.get_pos()):
-                self.a3 = fill_gradient(DISPLAYSURF, color=(235, 64, 52), gradient=(158, 27, 17),
-                                        rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.30,
-                                                         DISPLAYSURF.get_rect().width * 0.48,
-                                                         80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Kim Gordon", 1, (255, 255, 255)),
-                                 (10, DISPLAYSURF.get_rect().centery * 1.30))
-                if pygame.mouse.get_pressed()[0]:
-                    selectedNo = 3
-                    selected = True
-            else:
-                self.a3 = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
-                                        rect=pygame.Rect(5, DISPLAYSURF.get_rect().centery * 1.30,
-                                                         DISPLAYSURF.get_rect().width * 0.48,
-                                                         80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Kim Gordon", 1, (255, 255, 255)),
-                                 (10, DISPLAYSURF.get_rect().centery * 1.30))
-            if self.a4.collidepoint(pygame.mouse.get_pos()):
-                self.a4 = fill_gradient(DISPLAYSURF, color=(235, 64, 52), gradient=(158, 27, 17),
-                                        rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5,
-                                                         DISPLAYSURF.get_rect().centery * 1.30,
-                                                         DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Wendy Carlos", 1, (255, 255, 255)),
-                                 (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.30))
-                if pygame.mouse.get_pressed()[0]:
-                    selectedNo = 4
-                    selected = True
-            else:
-                self.a4 = fill_gradient(DISPLAYSURF, color=(80, 108, 250), gradient=(16, 12, 97),
-                                        rect=pygame.Rect(DISPLAYSURF.get_rect().width * 0.5,
-                                                         DISPLAYSURF.get_rect().centery * 1.30,
-                                                         DISPLAYSURF.get_rect().width * 0.49, 80), forward=False)
-                DISPLAYSURF.blit(self.answerFont.render("Wendy Carlos", 1, (255, 255, 255)),
-                                 (DISPLAYSURF.get_rect().width * 0.505, DISPLAYSURF.get_rect().centery * 1.30))
-            pygame.event.pump()
-            pygame.display.update()
-        self.isCorrect = (selectedNo == correctAnswer)
-
-
 pygame.mixer.init()
 pygame.mixer.music.load(os.path.join(current_path, "Music/battletime.ogg"))
 pygame.mixer.music.play(-1);
-
 
 def RescaleImage(image):
     return pygame.transform.scale(image, (TILESIZE, TILESIZE))
@@ -151,64 +25,6 @@ def RescaleImage(image):
 def gridDistance(pos1, pos2):
     return abs(pos1[0]-pos2[0])+abs(pos1[1]-pos2[1])
 
-def donothing():
-    x=2
-
-def fill_gradient(surface, color, gradient, rect=None, vertical=True, forward=True):
-    """fill a surface with a gradient pattern
-    Parameters:
-    color -> starting color
-    gradient -> final color
-    rect -> area to fill; default is surface's rect
-    vertical -> True=vertical; False=horizontal
-    forward -> True=forward; False=reverse
-
-    Pygame recipe: http://www.pygame.org/wiki/GradientCode
-    """
-    if rect is None: rect = surface.get_rect()
-    x1, x2 = rect.left, rect.right
-    y1, y2 = rect.top, rect.bottom
-    if vertical:
-        h = y2 - y1
-    else:
-        h = x2 - x1
-    if forward:
-        a, b = color, gradient
-    else:
-        b, a = color, gradient
-    rate = (
-        float(b[0] - a[0]) / h,
-        float(b[1] - a[1]) / h,
-        float(b[2] - a[2]) / h
-    )
-    fn_line = pygame.draw.line
-    if vertical:
-        for line in range(y1, y2):
-            color = (
-                min(max(a[0] + (rate[0] * (line - y1)), 0), 255),
-                min(max(a[1] + (rate[1] * (line - y1)), 0), 255),
-                min(max(a[2] + (rate[2] * (line - y1)), 0), 255)
-            )
-            fn_line(surface, color, (x1, line), (x2, line))
-    else:
-        for col in range(x1, x2):
-            color = (
-                min(max(a[0] + (rate[0] * (col - x1)), 0), 255),
-                min(max(a[1] + (rate[1] * (col - x1)), 0), 255),
-                min(max(a[2] + (rate[2] * (col - x1)), 0), 255)
-            )
-            fn_line(surface, color, (col, y1), (col, y2))
-    return rect
-
-
-def attack(fromCharacter,toCharacter):
-    menuSurface = pygame.Surface((240,180))
-    menuSurface.fill((40,40,40))
-    print(DISPLAYSURF.blit(pygame.image.load('Textures/bleachers.png'), [80, 10]))
-    pygame.display.update()
-    #testMenu = pygameMenu.Menu(surface=DISPLAYSURF, bgfun=test_background, font=pygameMenu.font.FONT_HELVETICA, font_color=(0, 0, 0), font_size=25, window_height=200, window_width=400, title="test")
-
-   # menu.main()
 def attack(fromCharacter,toCharacter):
     #menu.main()
     if not fromCharacter.has_attacked:
@@ -330,9 +146,7 @@ cursorPos = PLAYER.position
 pygame.init()
 if DEBUG:
     const = 200
-    INVFONT = pygame.font.SysFont('FreeSans.tff', 18)
-    testFont = pygame.font.SysFont('FreeSerif', 45, italic=True)
-    questionFont = pygame.font.SysFont('FreeSerif', 25)
+    INVFONT = pygame.font.SysFont('FreeSans.tff', 25)
 
 else:
     const = 0
@@ -366,12 +180,8 @@ def redTurn():
                 drawCharacters()
                 pygame.display.update()
                 time.sleep(0.4)
-    text = testFont.render("OPPONENT ATTACK PHASE", 1, (250, 80, 94))
-    textpos = text.get_rect()
-    textpos.centerx = DISPLAYSURF.get_rect().centerx
-    textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
-    DISPLAYSURF.blit(text, textpos)
-    #DISPLAYSURF.blit(opponentAttack, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
+
+    DISPLAYSURF.blit(opponentAttack, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
     pygame.display.update()
     time.sleep(.5)
     for enemy in listENEMIES:
@@ -382,15 +192,6 @@ def redTurn():
                 drawCharacters()
                 pygame.display.update()
                 time.sleep(0.4)
-    text = testFont.render("PLAYER MOVE PHASE", 1, (80, 108, 250))
-    textpos = text.get_rect()
-    textpos.centerx = DISPLAYSURF.get_rect().centerx
-    textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
-    DISPLAYSURF.blit(text, textpos)
-
-    #DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
-    pygame.display.update()
-    time.sleep(2)
     if len(listPLAYERS) != 0:
         drawCharacters()
         DISPLAYSURF.blit(playerMove, (nextWidth / 2 - (5 * TILESIZE / 2), nextHeight / 2 - const))
@@ -564,18 +365,7 @@ while True:
                     drawCharacters()
                     pygame.display.update()
                     phase = 'Attack'
-
-
-
-                    text = testFont.render("PLAYER ATTACK PHASE", 1, (80, 108, 250))
-                    textpos = text.get_rect()
-                    textpos.centerx = DISPLAYSURF.get_rect().centerx
-                    textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
-                    DISPLAYSURF.blit(text, textpos)
-
-                    correctAnswer=Question('When was the first dot com domain registered?', ['1993', '1995', '1988', '1985'], 1).isCorrect
-                    print(correctAnswer)
-                  #  DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
+                    DISPLAYSURF.blit(playerAttack, (nextWidth/2 -(5*TILESIZE/2), nextHeight/2 - const))
                     pygame.display.update()
                     time.sleep(.5)
                     for player in listPLAYERS:
@@ -607,14 +397,6 @@ while True:
             if allDone or not canAttack:
                 phase = 'Move'
                 turn= 'Red'
-                text = testFont.render("OPPONENT MOVE PHASE", 1, (250, 80, 94))
-                textpos = text.get_rect()
-                textpos.centerx = DISPLAYSURF.get_rect().centerx
-                textpos.centery = DISPLAYSURF.get_rect().centery * 0.75
-                DISPLAYSURF.blit(text, textpos)
-                #DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
-                pygame.display.update()
-                time.sleep(2)
                 if len(listENEMIES) != 0:
                     DISPLAYSURF.blit(opponentMove, (nextWidth / 2-(5*TILESIZE/2), nextHeight / 2 - const))
                     pygame.display.update()

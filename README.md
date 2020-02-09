@@ -1,11 +1,23 @@
-# Hacklahoma 2020 - Fire Stemblem: 2 Classrooms  
-## Zach Arani, Clayton McFarland, Jake Crampton, and Shiloh Beeler
+# PygameFireEmblem
+Fire Emblem created in PyGame. To run, run Game.py
 
-This is a visual novel/strategy simulator with the goal to teach STEM Education. The main characters are various types of plant stems which attend school, and compete in a quiz style competition in the form of a Fire Emblem style game.   
+The ultimate goal is to create a working prototype for a new type of Real Time Strategy game, using Fire Emblem as a basis. Our most up-to-date game in Unity can be found here:
 
-To run the game, you will need `python3`, `pygame`, and `pygame-menu`. Just clone the repository and run master.py using `python master.py`. After finishing the visual novel portion, you will be put into the strategy game portion where answering quiz questions correctly will help you in battle.  
+https://github.com/synapsii/TempestTacticsPrototype
+
+It will contain the following features:
+
+1) Cooldown-based movement, primarily with mouse
+
+2) Terrain advantages and disadvantages
+
+3) Combat (exact mechanics to be determined)
 
 
+## Current implementation
 
+1) Grid-based movement of multiple characters with right-click on mouse or by keyboard
 
-The basic movement and layout of the simulator was inspired by: https://github.com/Animostas/PygameFireEmblem
+2) Changing selection of character with left-click or using hotkeys (1-4)
+
+All images are owned by Nintendo
